@@ -32,12 +32,19 @@ char *getChanges(char *path, char *argv[]);
 int listDir(char *basedir, char *argv[]);
 
 /**
+ * Process the given file 
+ * @param entpath the file path.
+ */
+void processFile(char *entpath, char *argv[]);
+
+/**
  * Map all the arguments.
  * @param argc the number of arguments.
  * @param argv the arguments array.
  * @return 1 if the normal program flow. 
  * must be stopped after this function, 0 otherwise.
  */
+
 int mapArgs(int argc, char *argv[]);
 
 /**

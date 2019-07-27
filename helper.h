@@ -8,7 +8,27 @@
  * @param start the starting position.
  * @param len the number of characters to copy.
  */
-void substr(char *sub, char *str, int start, int len);
+void substr(char *sub, const char *str, const int start, const int len);
+
+/**
+ * Remove extra whitespaces at the beginning and end of a string.
+ * @param str the string.
+ */
+void *trim(char *str);
+
+/**
+ * Returns the string reversed.
+ * @param str the string.
+ * @Return the string reversed.
+ */
+char *strrev(char *str);
+/**
+ * Returns the complete file path.
+ * @param dir the file directory.
+ * @param filename the filename.
+ * @return the complete file path.
+ */
+char *fullFilename(const char *dir, const char *filename);
 
 /**
  * Returns a substring from the beginning to the last specified character.
@@ -16,7 +36,7 @@ void substr(char *sub, char *str, int start, int len);
  * @param character the specified character.
  * @return a substring from the beginning to the last specified character.
  */
-char *strBefore(char *str, char character);
+char *strBefore(const char *str, const char character);
 
 /**
  * Returns a substring from the last specified character to the end of the given string.
@@ -24,7 +44,7 @@ char *strBefore(char *str, char character);
  * @param character the specified character.
  * @return a substring from the last specified character to the end of the given string.
  */
-char *strAfter(char *str, char character);
+char *strAfter(const char *str, const char character);
 
 /**
  * Returns the filename with the specified text appended at the beginning.
@@ -32,7 +52,7 @@ char *strAfter(char *str, char character);
  * @param filename the filename.
  * @return the filename with the specified text appended at the beginning.
  */
-char *before(char *dir, char *filename, char *text);
+char *before(const char *dir, const char *filename, const char *text);
 
 /**
  * Returns the filename with the specified text appended at the end.
@@ -40,7 +60,7 @@ char *before(char *dir, char *filename, char *text);
  * @param filename the filename.
  * @return the filename with the specified text appended at the end.
  */
-char *after(char *dir, char *filename, char *text);
+char *after(const char *dir, const char *filename, const char *text);
 
 /**
  * Returns the filename with the text reversed.
@@ -48,7 +68,7 @@ char *after(char *dir, char *filename, char *text);
  * @param filename the filename.
  * @return the filename with the text reversed.
  */
-char *reverse(char *dir, char *filename);
+char *reverse(const char *dir, char *filename);
 
 /**
  * Returns the filename with all in lowercase or uppercase.
@@ -57,7 +77,7 @@ char *reverse(char *dir, char *filename);
  * @param upper 1 for uppercase, any other int for lowercase.
  * @return the filename with all in lowercase or uppercase.
  */
-char *changeCases(char *dir, char *filename, int upper);
+char *changeCases(const char *dir, const char *filename, const int upper);
 
 /**
  * Returns the filename with the text in uppercase.
@@ -65,7 +85,7 @@ char *changeCases(char *dir, char *filename, int upper);
  * @param filename the filename.
  * @return the filename with the text in uppercase.
  */
-char *upper(char *dir, char *filename);
+char *upper(const char *dir, const char *filename);
 
 /**
  * Returns the filename with the text in lowercase.
@@ -73,7 +93,7 @@ char *upper(char *dir, char *filename);
  * @param filename the filename.
  * @return the filename with the text in lowercase.
  */
-char *lower(char *dir, char *filename);
+char *lower(const char *dir, const char *filename);
 
 /**
  * Returns the filename with the specified text replaced by a new one.
@@ -83,7 +103,7 @@ char *lower(char *dir, char *filename);
  * @param rep the new text.
  * @return the filename with the specified text replaced by a new one.
  */
-char *replace(char *dir, char *filename, char *ori, char *rep);
+char *replace(const char *dir, const char *filename, const char *ori, const char *rep);
 
 /**
  * Returns a new string with the specified text replaced by a new one.
@@ -92,7 +112,7 @@ char *replace(char *dir, char *filename, char *ori, char *rep);
  * @param rep the new text.
  * @return a string with the specified text replaced by a new one.
  */
-char *strReplace(char *str, char *ori, char *rep);
+char *strReplace(const char *str, const char *ori, const char *rep);
 
 /**
  * Save into a string two switched parts separated by a separator. 
@@ -101,7 +121,7 @@ char *strReplace(char *str, char *ori, char *rep);
  * @param part_one the first part.
  * @param part_two the second part.
  */
-void doSwitch(char *new, char *sep, char *part_one, char *part_two);
+void doSwitch(char *new, const char *sep, char *part_one, char *part_two);
 
 /**
  * Returns a switched filename based in a separator.
@@ -110,6 +130,6 @@ void doSwitch(char *new, char *sep, char *part_one, char *part_two);
  * @param sep the separator.
  * @return a switched filename based in a separator.
  */
-char *switchSides(char *dir, char *filename, char sep);
+char *switchSides(const char *dir, const char *filename, const char sep);
 
 #endif // HELPER_H_

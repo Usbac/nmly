@@ -20,9 +20,10 @@
 
 const char *preview_msg = "\n%i File(s) to be modified in %i folder(s)\n%f Segs\n";
 const char *success_msg = "\n%i File(s) modified in %i folder(s)\n%f Segs\n";
-const char *error_msg = "Error opening directory\n";
+const char *dir_error_msg = "Error: Can't open directory\n";
+const char *arg_error_msg = "Error: no valid command\n";
 char *working_path = ".";
-char *version = "version 0.9";
+char *version = "version 0.9.0.1";
 int files_n = 0;
 int folders_n = 0;
 int option = 0;
@@ -33,19 +34,19 @@ int modify_folders = 0;
 
 int is_file(const char* path) 
 {
-    struct stat buf;
-    stat(path, &buf);
+	struct stat buf;
+	stat(path, &buf);
 
-    return S_ISREG(buf.st_mode);
+	return S_ISREG(buf.st_mode);
 }
 
 
 int is_dir(const char* path) 
 {
-    struct stat buf;
-    stat(path, &buf);
+	struct stat buf;
+	stat(path, &buf);
 
-    return S_ISDIR(buf.st_mode);
+	return S_ISDIR(buf.st_mode);
 }
 
 
@@ -73,11 +74,14 @@ char *getChanges(char *path, char *argv[])
 			break;
 	}
 
+	free(dir);
+	free(filename);
+
 	return path;
 }
 
 
-int listDir(char *basedir, char *argv[]) 
+int listDir(char *basedir, char *argv[])
 {
 	DIR *dir;
 	char b[512];
@@ -98,6 +102,10 @@ int listDir(char *basedir, char *argv[])
 		strcat(entpath, "/");
 		strcat(entpath, ent->d_name);
 
+		if (is_file(entpath) || (is_dir(entpath) && modify_folders)) {
+			processFile(entpath, argv);
+		}
+
 		if (recursive && is_dir(entpath)) {
 			if (listDir(entpath, argv) == -1) {
 				free(entpath);
@@ -105,20 +113,6 @@ int listDir(char *basedir, char *argv[])
 			}
 
 			folders_n++;
-		} else if (is_file(entpath) || (is_dir(entpath) && modify_folders)) {
-			char *new_path = getChanges(entpath, argv);
-
-			if (new_path == NULL) {
-				continue;
-			}
-
-			files_n++;
-
-			if (!preview) {
-				rename(entpath, new_path);
-			} else {
-				printf("%s > %s \n", entpath, new_path);
-			}	
 		}
 		
 		free(entpath);
@@ -127,6 +121,26 @@ int listDir(char *basedir, char *argv[])
 	closedir(dir);
 
 	return 0;
+}
+
+
+void processFile(char *entpath, char *argv[])
+{
+	char *new_path = getChanges(entpath, argv);
+
+	if (new_path == NULL) {
+		return;
+	}
+
+	files_n++;
+
+	if (!preview) {
+		rename(entpath, new_path);
+	} else {
+		printf("%s > %s \n", entpath, new_path);
+	}	
+
+	free(new_path);
 }
 
 
@@ -180,27 +194,23 @@ int mapArgs(int argc, char *argv[])
 	//Options
 	if (strcmp(argv[1], "before") == 0) {
 		option = BEFORE;
-	}
-	if (strcmp(argv[1], "after") == 0) {
+	} else if (strcmp(argv[1], "after") == 0) {
 		option = AFTER;
-	}
-	if (strcmp(argv[1], "replace") == 0) {
+	} else if (strcmp(argv[1], "replace") == 0) {
 		option = REPLACE;
-	}
-	if (strcmp(argv[1], "upper") == 0) {
+	} else if (strcmp(argv[1], "upper") == 0) {
 		option = UPPER;
-	}
-	if (strcmp(argv[1], "lower") == 0) {
+	} else if (strcmp(argv[1], "lower") == 0) {
 		option = LOWER;
-	}
-	if (strcmp(argv[1], "switch") == 0) {
+	} else if (strcmp(argv[1], "switch") == 0) {
 		option = SWITCH;
-	}
-	if (strcmp(argv[1], "reverse") == 0) {
+	} else if (strcmp(argv[1], "reverse") == 0) {
 		option = REVERSE;
-	}
-	if (strcmp(argv[1], "remove") == 0) {
+	} else if (strcmp(argv[1], "remove") == 0) {
 		option = REMOVE;
+	} else {
+		printf("%s\n", arg_error_msg);
+		return 1;
 	}
 
 	return 0;
@@ -213,22 +223,22 @@ void help()
 		"USAGE \n\n"
 		"$ nmly [Arg] [options...]\n\n"
 		"ARGUMENTS\n\n"
-		"after [text]         Add the text at the end of the filenames\n"
-		"before [text]        Add the text at the begining of the filenames\n"
-		"lower                All filename characters to lowercase\n"
-		"remove [text]        Remove the specified text from the filename\n"
+		"after [text]		 Add the text at the end of the filenames\n"
+		"before [text]		Add the text at the begining of the filenames\n"
+		"lower				All filename characters to lowercase\n"
+		"remove [text]		Remove the specified text from the filename\n"
 		"replace [ori] [new]  Replace a text with a new one\n"
-		"reverse              Reverse the filename\n"
-		"switch [sep]         Switch the filename order based in a separator\n"
-		"upper                All filename characters to uppercase\n\n"
+		"reverse			  Reverse the filename\n"
+		"switch [sep]		 Switch the filename order based in a separator\n"
+		"upper				All filename characters to uppercase\n\n"
 		"OPTIONS\n\n"
 		"-d --directory  The directory where the changes will be applied\n"
-		"-f --folders    Apply the changes to the folders name too\n"
-		"-h --help       Get help and information about the application\n"
-		"-l --locale     Accept special characters (like latin characters)\n"
-		"-p --preview    Show the changes without applying them\n"
+		"-f --folders	Apply the changes to the folders name too\n"
+		"-h --help	   Get help and information about the application\n"
+		"-l --locale	 Accept special characters (like latin characters)\n"
+		"-p --preview	Show the changes without applying them\n"
 		"-r --recursive  Apply the changes recursively in the directory\n"
-		"-v --version    Show the application version\n\n"
+		"-v --version	Show the application version\n\n"
 		"EXAMPLES\n\n"
 		"$ nmly switch - -d ./\n"
 		"Author - Song.mp3 > Song - Author.mp3\n\n"
@@ -250,14 +260,13 @@ int main(int argc, char *argv[])
 	float start_time = (float)clock() / CLOCKS_PER_SEC;
 
 	if (listDir(working_path, argv) == -1) {
-		printf(error_msg);
+		printf("%s", dir_error_msg);
 		return -1;
 	}
 
 	float total_time = ((float)clock() / CLOCKS_PER_SEC) - start_time;
 
-	const char *msg = (preview == 1)? preview_msg : success_msg;
+	const char *msg = (preview == 1) ? preview_msg : success_msg;
 	printf(msg, files_n, folders_n, total_time);
-	
 	return 0;
 }

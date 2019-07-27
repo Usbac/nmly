@@ -1,2 +1,7 @@
-.vscode/tasks.json
+.vscode/
 nmly.exe
+nmly
+.nmly.c.swp
+.nmly.h.swp
+.helper.c.swp
+.helper.h.swp

@@ -18,12 +18,14 @@
 #define REVERSE 6
 #define REMOVE 7
 
-const char *preview_msg = "\n%i File(s) to be modified in %i folder(s)\n%f Segs\n";
-const char *success_msg = "\n%i File(s) modified in %i folder(s)\n%f Segs\n";
+const char *preview_msg = "\n%i File(s) to be modified in %i folder(s)";
+const char *success_msg = "\n%i File(s) modified in %i folder(s)";
+const char *time_msg = "\n%f Segs\n";
 const char *dir_error_msg = "Error: Can't open directory\n";
-const char *arg_error_msg = "Error: no valid command\n";
+const char *arg_error_msg = "Error: Invalid command\n";
+const char *version = "version 0.9.2";
 char *working_path = ".";
-char *version = "version 0.9.0.1";
+char *filter = "";
 int files_n = 0;
 int folders_n = 0;
 int option = 0;
@@ -54,6 +56,12 @@ char *getChanges(char *path, char *argv[])
 {
 	char *dir = strBefore(path, '/');
 	char *filename = strAfter(path, '/');
+	
+	//Matches filter by extension
+	char *extension = strAfter(filename, '.');
+	if (filter[0] != '\0' && (extension == NULL || strcmp(extension, filter))) {
+		return NULL;
+	}
 
 	switch (option) {
 		case BEFORE: return before(dir, filename, argv[2]);
@@ -189,6 +197,12 @@ int mapArgs(int argc, char *argv[])
 			working_path = malloc(strlen(argv[++i]) * sizeof(char));
 			strcpy(working_path, argv[i]);
 		}
+
+		//Extension filter
+    		if (strcmp(argv[i], "-e") == 0 || strcmp(argv[i], "--extension") == 0) {
+			filter = malloc(strlen(argv[++i]) * sizeof(char));
+			strcpy(filter, argv[i]);
+		}
 	}
 
 	//Options
@@ -232,21 +246,24 @@ void help()
 		"switch [sep]         Switch the filename order based in a separator\n"
 		"upper                All filename characters to uppercase\n\n"
 		"OPTIONS\n\n"
-		"-d --directory  The directory where the changes will be applied\n"
-		"-f --folders    Apply the changes to the folders name too\n"
-		"-h --help       Get help and information about the application\n"
-		"-l --locale     Accept special characters (like latin characters)\n"
-		"-p --preview    Show the changes without applying them\n"
-		"-r --recursive  Apply the changes recursively in the directory\n"
-		"-v --version    Show the application version\n\n"
+		"-d --directory [text]  The directory where the changes will be applied\n"
+		"-e --extension [text]  Apply the changes only to the files with that extension\n"
+		"-f --folders           Apply the changes to the folders name too\n"
+		"-h --help              Get help and information about the application\n"
+		"-l --locale            Accept special characters (like latin characters)\n"
+		"-p --preview           Show the changes without applying them\n"
+		"-r --recursive         Apply the changes recursively in the directory\n"
+		"-v --version           Show the application version\n\n"
 		"EXAMPLES\n\n"
 		"$ nmly switch - -d ./\n"
 		"Author - Song.mp3 > Song - Author.mp3\n\n"
+		"$ nmly remove ' 2017' -d ./vacations -e mp4\n"
+		"video 2017.mp4 > video.mp4\n"
 		"$ nmly replace jpeg jpg -d ./\n"
 		"picture.jpeg > picture.jpg\n\n"
 		"$ nmly after world -d ./ -r\n"
 		"hello.pdf > helloworld.pdf\n"
-		"subfolder/file.txt > subfolder/fileworld.txt \n"
+		"subfolder/file.txt > subfolder/fileworld.txt\n"
 	);
 }
 
@@ -267,6 +284,8 @@ int main(int argc, char *argv[])
 	float total_time = ((float)clock() / CLOCKS_PER_SEC) - start_time;
 
 	const char *msg = (preview == 1) ? preview_msg : success_msg;
-	printf(msg, files_n, folders_n, total_time);
+	printf(msg, files_n, folders_n);
+	printf(time_msg, total_time);
+
 	return 0;
 }

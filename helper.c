@@ -221,6 +221,11 @@ char *lower(const char *dir, const char *filename)
 char *replace(const char *dir, const char *filename, const char *ori, const char *rep)
 {
 	char *replaced = strReplace(filename, ori, rep);
+
+	if (replaced == NULL) {
+		return NULL;
+	}
+
 	char *new = malloc(strlen(dir) + strlen(replaced) + 2);
 	strcpy(new, dir);
 	strcat(new, "/");
@@ -239,6 +244,10 @@ char *strReplace(const char *str, const char *ori, const char *rep)
 	
 	strcpy(new, "\0");
 	strcpy(remaining, str);
+
+	if(strstr(remaining, ori) == NULL) {
+		return NULL;
+	}
 
 	while((pos = strstr(remaining, ori)) != NULL) {
 		size_t size = pos - remaining;
@@ -293,9 +302,9 @@ char *switchSides(const char *dir, const char *filename, const char sep)
 		char *part_one = strBefore(filename, sep);
 		char *part_two = strAfter(filename, sep);
 
-		//Return unswitched name if no separator is found or if it's a dot
+		//Return null if no separator is found or if it's a dot
 		if (part_one == NULL || sep == '.') {
-			return fullFilename(dir, filename);
+			return NULL;
 		}
 
 		doSwitch(new, tmp, part_one, part_two);
@@ -311,9 +320,9 @@ char *switchSides(const char *dir, const char *filename, const char sep)
 	char *part_one = strBefore(name, sep);
 	char *part_two = strAfter(name, sep);
 
-	//Return unswitched name if no separator is found or if it's a dot
+	//Return null if no separator is found or if it's a dot
 	if (part_one == NULL || sep == '.') {
-		return fullFilename(dir, filename);
+		return NULL;
 	}
 	
 	doSwitch(new, tmp, part_one, part_two);

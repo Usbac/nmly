@@ -1,7 +1,7 @@
 <h1 align="center">Nmly</h1>
 
 <p align="center">
-<img src="https://img.shields.io/badge/version-0.9.0.1-blue.svg"> <img src="https://img.shields.io/badge/license-MIT-orange.svg">
+<img src="https://img.shields.io/badge/version-0.9.2-blue.svg"> <img src="https://img.shields.io/badge/license-MIT-orange.svg">
 </p>
 
 <h4 align="center">Nmly is a massive file renamer utility with useful functions and written in C.</h4>
@@ -26,7 +26,9 @@
 
 ## Options
 
-`-d` `--directory` The directory where the changes will be applied
+`-d` `--directory [text]` The directory where the changes will be applied
+
+`-e` `--extension [text]` Apply the changes only to the files with that extension 
 
 `-f` `--folders` Apply the changes to the folders name too
 
@@ -45,6 +47,10 @@
 ```console
 pc@usbac:~$ nmly switch - -d ./
 Author - Song.mp3 > Song - Author.mp3
+```
+```console
+pc@usbac:~$ nmly remove " 2017" -d ./vacations -e mp4
+video 2017.mp4 > video.mp4
 ```
 ```console
 pc@usbac:~$ nmly replace jpeg jpg -d ./

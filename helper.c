@@ -158,6 +158,23 @@ char *reverse(const char *dir, char *filename)
 }
 
 
+void strCases(char *dest, const char *str, const int upper)
+{
+	size_t length = strlen(str);
+	size_t i;
+
+	for (i = 0; i < length; i++) {
+		if (upper) {
+			dest[i] = toupper(str[i]);
+		} else {
+			dest[i] = tolower(str[i]);
+		}
+	}
+
+	dest[i] = '\0';
+}
+
+
 char *changeCases(const char *dir, const char *filename, const int upper)
 {
 	char *name = strBefore(filename, '.');
@@ -170,31 +187,11 @@ char *changeCases(const char *dir, const char *filename, const int upper)
 
 	//Without extension
 	if (name == NULL) {
-		size_t length = strlen(filename);
-		size_t i;
-		for (i = 0; i < length; i++) {
-			if (upper) {
-				cases[i] = toupper(filename[i]);
-			} else {
-				cases[i] = tolower(filename[i]);
-			}
-		}
-		cases[i] = '\0';
-
+		strCases(cases, filename, upper);
 		strcat(new, cases);
 	//With extension
 	} else {
-		size_t length = strlen(name);
-		size_t i;
-		for (i = 0; i < length; i++) {
-			if (upper) {
-				cases[i] = toupper(name[i]);
-			} else {
-				cases[i] = tolower(name[i]);
-			}
-		}
-		cases[i] = '\0';
-
+		strCases(cases, name, upper);
 		strcat(new, cases);
 		strcat(new, ".");
 		strcat(new, extension);
@@ -237,28 +234,21 @@ char *replace(const char *dir, const char *filename, const char *ori, const char
 
 char *strReplace(const char *str, const char *ori, const char *rep)
 {
-	const int BUFFER = 2048;
-	char *new = malloc(BUFFER);
-	char *remaining = malloc(strlen(str) * sizeof(char));
+	char *new = malloc(4096);
+	new[0] = '\0';
+	char *remaining = malloc(strlen(str) + 1 * sizeof(char));
 	char *pos;
 	
-	strcpy(new, "\0");
 	strcpy(remaining, str);
 
-	if(strstr(remaining, ori) == NULL) {
+	if (strstr(remaining, ori) == NULL) {
 		return NULL;
 	}
 
-	while((pos = strstr(remaining, ori)) != NULL) {
-		size_t size = pos - remaining;
-
-		char *temp = malloc(strlen(remaining) + 1 * sizeof(char));
-		strcpy(temp, remaining);
-		temp[size] = '\0';
-		
-		strcat(new, temp);
+	while ((pos = strstr(remaining, ori)) != NULL) {
+		strncat(new + strlen(new), remaining, pos - remaining);
 		strcat(new, rep);
-		remaining += size + strlen(ori);
+		remaining += pos - remaining + strlen(ori);
 	}
 
 	strcat(new, remaining);

@@ -20,14 +20,14 @@
 
 const char *preview_msg = "\n%i File(s) to be modified in %i folder(s)";
 const char *success_msg = "\n%i File(s) modified in %i folder(s)";
+const char *compare_msg = "%s > %s \n";
 const char *time_msg = "\n%f Segs\n";
 const char *dir_error_msg = "Error: Can't open directory\n";
 const char *arg_error_msg = "Error: Invalid command\n";
-const char *version = "version 0.9.2";
+const char *version = "version 0.9.2.1";
 char *working_path = ".";
 char *filter = "";
-int files_n = 0;
-int folders_n = 0;
+int files_n = 0, folders_n = 0;
 int option = 0;
 int preview = 0;
 int recursive = 0;
@@ -145,7 +145,7 @@ void processFile(char *entpath, char *argv[])
 	if (!preview) {
 		rename(entpath, new_path);
 	} else {
-		printf("%s > %s \n", entpath, new_path);
+		printf(compare_msg, entpath, new_path);
 	}	
 
 	free(new_path);
@@ -277,7 +277,7 @@ int main(int argc, char *argv[])
 	float start_time = (float)clock() / CLOCKS_PER_SEC;
 
 	if (listDir(working_path, argv) == -1) {
-		printf("%s", dir_error_msg);
+		printf("%s\n", dir_error_msg);
 		return -1;
 	}
 

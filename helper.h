@@ -71,6 +71,14 @@ char *after(const char *dir, const char *filename, const char *text);
 char *reverse(const char *dir, char *filename);
 
 /**
+ * Change a string to lowercase or uppercase.
+ * @param dest the destiny string.
+ * @param str the original string.
+ * @param upper 1 for uppercase, any other int for lowercase.
+ */
+void strCases(char *dest, const char *str, const int upper);
+
+/**
  * Returns the filename with all in lowercase or uppercase.
  * @param dir the file directory.
  * @param filename the filename.

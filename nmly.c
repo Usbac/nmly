@@ -20,11 +20,11 @@
 
 const char *preview_msg = "\n%i File(s) to be modified in %i folder(s)";
 const char *success_msg = "\n%i File(s) modified in %i folder(s)";
+const char *dir_error_msg = "Can't open directory %s\n";
 const char *compare_msg = "%s > %s \n";
 const char *time_msg = "\n%f Segs\n";
-const char *dir_error_msg = "Error: Can't open directory\n";
 const char *arg_error_msg = "Error: Invalid command\n";
-const char *version = "version 0.9.2.1";
+const char *version = "version 0.9.3";
 char *working_path = ".";
 char *filter = "";
 int files_n = 0, folders_n = 0;
@@ -89,17 +89,18 @@ char *getChanges(char *path, char *argv[])
 }
 
 
-int listDir(char *basedir, char *argv[])
+void listDir(char *basedir, char *argv[])
 {
 	DIR *dir;
 	char b[512];
 	struct dirent *ent;
 
-	if((dir = opendir(basedir)) == NULL) {
-		return -1;
+	if ((dir = opendir(basedir)) == NULL) {
+		printf(dir_error_msg, basedir);
+		return;
 	}
 
-	while((ent = readdir(dir)) != NULL) {
+	while ((ent = readdir(dir)) != NULL) {
 		//Avoid current and previous folders
 		if(strcmp(ent->d_name, ".") == 0 || strcmp(ent->d_name, "..") == 0) {
 			continue;
@@ -115,11 +116,7 @@ int listDir(char *basedir, char *argv[])
 		}
 
 		if (recursive && is_dir(entpath)) {
-			if (listDir(entpath, argv) == -1) {
-				free(entpath);
-				return -1;
-			}
-
+			listDir(entpath, argv);
 			folders_n++;
 		}
 		
@@ -128,7 +125,7 @@ int listDir(char *basedir, char *argv[])
 
 	closedir(dir);
 
-	return 0;
+	return;
 }
 
 
@@ -206,21 +203,21 @@ int mapArgs(int argc, char *argv[])
 	}
 
 	//Options
-	if (strcmp(argv[1], "before") == 0) {
+	if (!strcmp(argv[1], "before")) {
 		option = BEFORE;
-	} else if (strcmp(argv[1], "after") == 0) {
+	} else if (!strcmp(argv[1], "after")) {
 		option = AFTER;
-	} else if (strcmp(argv[1], "replace") == 0) {
+	} else if (!strcmp(argv[1], "replace")) {
 		option = REPLACE;
-	} else if (strcmp(argv[1], "upper") == 0) {
+	} else if (!strcmp(argv[1], "upper")) {
 		option = UPPER;
-	} else if (strcmp(argv[1], "lower") == 0) {
+	} else if (!strcmp(argv[1], "lower")) {
 		option = LOWER;
-	} else if (strcmp(argv[1], "switch") == 0) {
+	} else if (!strcmp(argv[1], "switch")) {
 		option = SWITCH;
-	} else if (strcmp(argv[1], "reverse") == 0) {
+	} else if (!strcmp(argv[1], "reverse")) {
 		option = REVERSE;
-	} else if (strcmp(argv[1], "remove") == 0) {
+	} else if (!strcmp(argv[1], "remove")) {
 		option = REMOVE;
 	} else {
 		printf("%s\n", arg_error_msg);
@@ -258,7 +255,7 @@ void help()
 		"$ nmly switch - -d ./\n"
 		"Author - Song.mp3 > Song - Author.mp3\n\n"
 		"$ nmly remove ' 2017' -d ./vacations -e mp4\n"
-		"video 2017.mp4 > video.mp4\n"
+		"video 2017.mp4 > video.mp4\n\n"
 		"$ nmly replace jpeg jpg -d ./\n"
 		"picture.jpeg > picture.jpg\n\n"
 		"$ nmly after world -d ./ -r\n"
@@ -274,14 +271,11 @@ int main(int argc, char *argv[])
 		return 0;
 	}
 
-	float start_time = (float)clock() / CLOCKS_PER_SEC;
+	float start_time = (float) clock() / CLOCKS_PER_SEC;
 
-	if (listDir(working_path, argv) == -1) {
-		printf("%s\n", dir_error_msg);
-		return -1;
-	}
+	listDir(working_path, argv);
 
-	float total_time = ((float)clock() / CLOCKS_PER_SEC) - start_time;
+	float total_time = ((float) clock() / CLOCKS_PER_SEC) - start_time;
 
 	const char *msg = (preview == 1) ? preview_msg : success_msg;
 	printf(msg, files_n, folders_n);

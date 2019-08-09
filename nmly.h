@@ -27,9 +27,8 @@ char *getChanges(char *path, char *argv[]);
  * Apply or preview the changes over the specified directory.
  * @param basedir the directory.
  * @param argv the arguments array.
- * @return -1 if an error has occurred, 0 otherwise.
  */
-int listDir(char *basedir, char *argv[]);
+void listDir(char *basedir, char *argv[]);
 
 /**
  * Process the given file 

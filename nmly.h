@@ -40,7 +40,7 @@ void processFile(char *entpath, char *argv[]);
  * Map all the arguments.
  * @param argc the number of arguments.
  * @param argv the arguments array.
- * @return 1 if the normal program flow. 
+ * @return 1 if the normal program flow
  * must be stopped after this function, 0 otherwise.
  */
 

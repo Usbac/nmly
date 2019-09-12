@@ -56,6 +56,7 @@ char *getChanges(char *path, char *argv[])
 {
 	char *dir = strBefore(path, '/');
 	char *filename = strAfter(path, '/');
+	char *new_path = path;
 	
 	//Matches filter by extension
 	char *extension = strAfter(filename, '.');
@@ -64,28 +65,28 @@ char *getChanges(char *path, char *argv[])
 	}
 
 	switch (option) {
-		case BEFORE: return before(dir, filename, argv[2]);
+		case BEFORE: new_path = before(dir, filename, argv[2]);
 			break;
-		case AFTER: return after(dir, filename, argv[2]);
+		case AFTER: new_path = after(dir, filename, argv[2]);
 			break;
-		case UPPER: return upper(dir, filename);
+		case UPPER: new_path = upper(dir, filename);
 			break;
-		case LOWER: return lower(dir, filename);
+		case LOWER: new_path = lower(dir, filename);
 			break;
-		case SWITCH: return switchSides(dir, filename, argv[2][0]);
+		case SWITCH: new_path = switchSides(dir, filename, argv[2][0]);
 			break;
-		case REVERSE: return reverse(dir, filename);
+		case REVERSE: new_path = reverse(dir, filename);
 			break;
-		case REPLACE: return replace(dir, filename, argv[2], argv[3]);
+		case REPLACE: new_path = replace(dir, filename, argv[2], argv[3]);
 			break;
-		case REMOVE: return replace(dir, filename, argv[2], "");
+		case REMOVE: new_path = replace(dir, filename, argv[2], "");
 			break;
 	}
 
 	free(dir);
 	free(filename);
 
-	return path;
+	return new_path;
 }
 
 
@@ -141,9 +142,9 @@ void processFile(char *entpath, char *argv[])
 
 	if (!preview) {
 		rename(entpath, new_path);
-	} else {
-		printf(compare_msg, entpath, new_path);
-	}	
+	}
+
+	printf(compare_msg, entpath, new_path);
 
 	free(new_path);
 }
@@ -154,33 +155,33 @@ int mapArgs(int argc, char *argv[])
 	size_t i;
 	for (i = 0; i < argc; i++) {
 		//Recursive
-		if (strcmp(argv[i], "-r") == 0 || strcmp(argv[i], "--recursive") == 0) {
+		if (!strcmp(argv[i], "-r") || !strcmp(argv[i], "--recursive")) {
 			recursive = 1;
 		}
 
 		//Preview
-		if (strcmp(argv[i], "-p") == 0 || strcmp(argv[i], "--preview") == 0) {
+		if (!strcmp(argv[i], "-p") || !strcmp(argv[i], "--preview")) {
 			preview = 1;
 		}
 		
 		//Modify folders
-		if (strcmp(argv[i], "-f") == 0 || strcmp(argv[i], "--folders") == 0) {
+		if (!strcmp(argv[i], "-f") || !strcmp(argv[i], "--folders")) {
 			modify_folders = 1;
 		}
 
 		//Locale (special characters)
-		if (strcmp(argv[i], "-l") == 0 || strcmp(argv[i], "--locale") == 0) {
+		if (!strcmp(argv[i], "-l") || !strcmp(argv[i], "--locale")) {
 			setlocale(LC_ALL, "");
 		}
 
 		//Help
-		if (strcmp(argv[i], "-h") == 0 || strcmp(argv[i], "--help") == 0) {
+		if (!strcmp(argv[i], "-h") || !strcmp(argv[i], "--help")) {
 			help();
 			return 1;
 		}
 
 		//Version
-		if (strcmp(argv[i], "-v") == 0 || strcmp(argv[i], "--version") == 0) {
+		if (!strcmp(argv[i], "-v") || !strcmp(argv[i], "--version")) {
 			printf("%s\n", version);
 			return 1;
 		}

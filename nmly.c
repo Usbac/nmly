@@ -20,11 +20,11 @@
 
 const char *preview_msg = "\n%i File(s) to be modified in %i folder(s)";
 const char *success_msg = "\n%i File(s) modified in %i folder(s)";
-const char *dir_error_msg = "Can't open directory %s\n";
+const char *dir_error_msg = "Cannot open directory %s\n";
 const char *compare_msg = "%s > %s \n";
 const char *time_msg = "\n%f Segs\n";
 const char *arg_error_msg = "Error: Invalid command\n";
-const char *version = "version 0.9.3";
+const char *version_msg = "Nmly v0.9.4\n";
 char *working_path = ".";
 char *filter = "";
 int files_n = 0, folders_n = 0;
@@ -182,7 +182,7 @@ int mapArgs(int argc, char *argv[])
 
 		//Version
 		if (!strcmp(argv[i], "-v") || !strcmp(argv[i], "--version")) {
-			printf("%s\n", version);
+			printf("%s", version_msg);
 			return 1;
 		}
 

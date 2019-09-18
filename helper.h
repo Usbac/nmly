@@ -1,5 +1,6 @@
 #ifndef HELPER_H_
 #define HELPER_H_
+#define BUFFER 512
 
 /**
  * Copy a portion of the specified string into a new one.

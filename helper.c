@@ -180,17 +180,19 @@ char *changeCases(const char *dir, const char *filename, const int upper)
 	char *name = strBefore(filename, '.');
 	char *extension = strAfter(filename, '.');
 	char *new = malloc((strlen(dir) + strlen(filename) + 2) * sizeof(char));
-	char *cases = malloc(strlen(filename) * sizeof(char));
+	char *cases;
 
 	strcpy(new, dir);
 	strcat(new, "/");
 
 	//Without extension
 	if (name == NULL) {
+		cases = malloc(strlen(filename) + 1 * sizeof(char));
 		strCases(cases, filename, upper);
 		strcat(new, cases);
 	//With extension
 	} else {
+		cases = malloc(strlen(name) + 1 * sizeof(char));
 		strCases(cases, name, upper);
 		strcat(new, cases);
 		strcat(new, ".");
@@ -198,6 +200,8 @@ char *changeCases(const char *dir, const char *filename, const int upper)
 	}
 
 	free(cases);
+	free(name);
+	free(extension);
 
 	return new;
 }
@@ -228,15 +232,18 @@ char *replace(const char *dir, const char *filename, const char *ori, const char
 	strcat(new, "/");
 	strcat(new, replaced);
 
+	free(replaced);
+
 	return new;
 }
 
 
 char *strReplace(const char *str, const char *ori, const char *rep)
 {
-	char *new = malloc(4096);
+	char *new = malloc(BUFFER * sizeof(char));
 	new[0] = '\0';
-	char *remaining = malloc(strlen(str) + 1 * sizeof(char));
+	char *remaining_ref = malloc(strlen(str) + 1 * sizeof(char));
+	char *remaining = remaining_ref;
 	char *pos;
 	
 	strcpy(remaining, str);
@@ -252,6 +259,8 @@ char *strReplace(const char *str, const char *ori, const char *rep)
 	}
 
 	strcat(new, remaining);
+
+	free(remaining_ref);
 
 	return new;
 }
@@ -299,6 +308,7 @@ char *switchSides(const char *dir, const char *filename, const char sep)
 
 		doSwitch(new, tmp, part_one, part_two);
 		
+		free(name);
 		free(part_one);
 		free(part_two);
 
@@ -319,6 +329,8 @@ char *switchSides(const char *dir, const char *filename, const char sep)
 	strcat(new, ".");
 	strcat(new, extension);
 	
+	free(extension);
+	free(name);
 	free(part_one);
 	free(part_two);
 

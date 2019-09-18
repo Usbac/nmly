@@ -9,22 +9,14 @@
 #include "nmly.h"
 #include "helper.h"
 
-#define BEFORE 0
-#define AFTER 1
-#define REPLACE 2
-#define UPPER 3
-#define LOWER 4
-#define SWITCH 5
-#define REVERSE 6
-#define REMOVE 7
-
 const char *preview_msg = "\n%i File(s) to be modified in %i folder(s)";
 const char *success_msg = "\n%i File(s) modified in %i folder(s)";
 const char *dir_error_msg = "Cannot open directory %s\n";
+const char *dir_confirm_msg = "Apply the changes in the following directory '%s'? [Y/n] ";
 const char *compare_msg = "%s > %s \n";
 const char *time_msg = "\n%f Segs\n";
 const char *arg_error_msg = "Error: Invalid command\n";
-const char *version_msg = "Nmly v0.9.4\n";
+const char *version_msg = "Nmly v0.9.5\n";
 char *working_path = ".";
 char *filter = "";
 int files_n = 0, folders_n = 0;
@@ -56,7 +48,7 @@ char *getChanges(char *path, char *argv[])
 {
 	char *dir = strBefore(path, '/');
 	char *filename = strAfter(path, '/');
-	char *new_path = path;
+	char *new_path = NULL;
 	
 	//Matches filter by extension
 	char *extension = strAfter(filename, '.');
@@ -93,7 +85,7 @@ char *getChanges(char *path, char *argv[])
 void listDir(char *basedir, char *argv[])
 {
 	DIR *dir;
-	char b[512];
+	char b[BUFFER];
 	struct dirent *ent;
 
 	if ((dir = opendir(basedir)) == NULL) {
@@ -135,6 +127,8 @@ void processFile(char *entpath, char *argv[])
 	char *new_path = getChanges(entpath, argv);
 
 	if (new_path == NULL) {
+		free(new_path);
+		
 		return;
 	}
 
@@ -274,11 +268,23 @@ int main(int argc, char *argv[])
 
 	float start_time = (float) clock() / CLOCKS_PER_SEC;
 
+	//Confirmation
+	if (!preview) {
+		char confirm;
+
+		printf(dir_confirm_msg, working_path);
+		scanf("%c", &confirm);
+
+		if (confirm != 'Y' && confirm != 'y') {
+			return 0;
+		}
+	}
+
 	listDir(working_path, argv);
 
 	float total_time = ((float) clock() / CLOCKS_PER_SEC) - start_time;
 
-	const char *msg = (preview == 1) ? preview_msg : success_msg;
+	const char *msg = (preview) ? preview_msg : success_msg;
 	printf(msg, files_n, folders_n);
 	printf(time_msg, total_time);
 

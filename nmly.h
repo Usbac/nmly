@@ -1,6 +1,15 @@
 #ifndef NMLY_H_
 #define NMLY_H_
 
+#define BEFORE 0
+#define AFTER 1
+#define REPLACE 2
+#define UPPER 3
+#define LOWER 4
+#define SWITCH 5
+#define REVERSE 6
+#define REMOVE 7
+
 /**
  * Returns 1 if the specified path is a file, 0 otherwise.
  * @param path the path.
@@ -33,6 +42,7 @@ void listDir(char *basedir, char *argv[]);
 /**
  * Process the given file 
  * @param entpath the file path.
+ * @param argv the arguments array.
  */
 void processFile(char *entpath, char *argv[]);
 
@@ -48,8 +58,6 @@ int mapArgs(int argc, char *argv[]);
 
 /**
  * Display the help text.
- * @param test blah blah parameter.
- * @return 0 if blah blah passed.
  */
 void help();
 

@@ -95,7 +95,7 @@ void listDir(char *basedir, char *argv[])
 
 	while ((ent = readdir(dir)) != NULL) {
 		//Avoid current and previous folders
-		if(strcmp(ent->d_name, ".") == 0 || strcmp(ent->d_name, "..") == 0) {
+		if(!strcmp(ent->d_name, ".") || !strcmp(ent->d_name, "..")) {
 			continue;
 		}
 
@@ -185,13 +185,13 @@ int mapArgs(int argc, char *argv[])
 		}
 
 		//Working path
-		if (strcmp(argv[i], "-d") == 0 || strcmp(argv[i], "--directory") == 0) {
+		if (!strcmp(argv[i], "-d") || !strcmp(argv[i], "--directory")) {
 			working_path = malloc(strlen(argv[++i]) * sizeof(char));
 			strcpy(working_path, argv[i]);
 		}
 
 		//Extension filter
-    		if (strcmp(argv[i], "-e") == 0 || strcmp(argv[i], "--extension") == 0) {
+    		if (!strcmp(argv[i], "-e") || !strcmp(argv[i], "--extension")) {
 			filter = malloc(strlen(argv[++i]) * sizeof(char));
 			strcpy(filter, argv[i]);
 		}
@@ -262,7 +262,7 @@ void help()
 
 int main(int argc, char *argv[]) 
 {
-	if (mapArgs(argc, argv) == 1) {
+	if (mapArgs(argc, argv)) {
 		return 0;
 	}
 

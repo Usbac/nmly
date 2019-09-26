@@ -9,19 +9,22 @@
 #include "nmly.h"
 #include "helper.h"
 
+const char *single_str = "%s\n";
 const char *preview_msg = "\n%i File(s) to be modified in %i folder(s)";
 const char *success_msg = "\n%i File(s) modified in %i folder(s)";
+const char *files_error_msg = "\n%i File(s) cannot be modified. Maybe check your permissions?";
 const char *dir_error_msg = "Cannot open directory %s\n";
 const char *dir_confirm_msg = "Apply the changes in the following directory '%s'? [Y/n] ";
 const char *compare_msg = "%s > %s \n";
 const char *time_msg = "\n%f Segs\n";
 const char *arg_error_msg = "Error: Invalid command\n";
-const char *version_msg = "Nmly v0.9.5\n";
+const char *version_msg = "Nmly v0.9.6\n";
 char *working_path = ".";
 char *filter = "";
-int files_n = 0, folders_n = 0;
+int files_n = 0, folders_n = 0, files_error_n = 0;
 int option = 0;
 int preview = 0;
+int preview_unmodifiable = 0;
 int recursive = 0;
 int modify_folders = 0;
 
@@ -89,7 +92,8 @@ void listDir(char *basedir, char *argv[])
 	struct dirent *ent;
 
 	if ((dir = opendir(basedir)) == NULL) {
-		printf(dir_error_msg, basedir);
+		printf(preview_unmodifiable ? single_str : dir_error_msg, basedir);
+		files_error_n++;
 		return;
 	}
 
@@ -134,11 +138,13 @@ void processFile(char *entpath, char *argv[])
 
 	files_n++;
 
-	if (!preview) {
-		rename(entpath, new_path);
+	if (!preview_unmodifiable) {
+		if (!preview) {
+			rename(entpath, new_path);
+		}
+	
+		printf(compare_msg, entpath, new_path);
 	}
-
-	printf(compare_msg, entpath, new_path);
 
 	free(new_path);
 }
@@ -166,6 +172,11 @@ int mapArgs(int argc, char *argv[])
 		//Locale (special characters)
 		if (!strcmp(argv[i], "-l") || !strcmp(argv[i], "--locale")) {
 			setlocale(LC_ALL, "");
+		}
+
+		//List unmodifiable files
+		if (!strcmp(argv[i], "-u") || !strcmp(argv[i], "--unmodifiable")) {
+			preview_unmodifiable = 1;
 		}
 
 		//Help
@@ -214,7 +225,7 @@ int mapArgs(int argc, char *argv[])
 		option = REVERSE;
 	} else if (!strcmp(argv[1], "remove")) {
 		option = REMOVE;
-	} else {
+	} else if (!preview_unmodifiable) {
 		printf("%s\n", arg_error_msg);
 		return 1;
 	}
@@ -245,17 +256,20 @@ void help()
 		"-l --locale            Accept special characters (like latin characters)\n"
 		"-p --preview           Show the changes without applying them\n"
 		"-r --recursive         Apply the changes recursively in the directory\n"
+		"-u --unmodifiable      Show the files that cannot be modified\n"
 		"-v --version           Show the application version\n\n"
 		"EXAMPLES\n\n"
 		"$ nmly switch - -d ./\n"
 		"Author - Song.mp3 > Song - Author.mp3\n\n"
 		"$ nmly remove ' 2017' -d ./vacations -e mp4\n"
-		"video 2017.mp4 > video.mp4\n\n"
+		"./vacations/video 2017.mp4 > ./vacations/video.mp4\n\n"
 		"$ nmly replace jpeg jpg -d ./\n"
 		"picture.jpeg > picture.jpg\n\n"
 		"$ nmly after world -d ./ -r\n"
 		"hello.pdf > helloworld.pdf\n"
-		"subfolder/file.txt > subfolder/fileworld.txt\n"
+		"subfolder/file.txt > subfolder/fileworld.txt\n\n"
+		"$ nmly -u -d ./folder -r\n"
+		"./folder/filewithpermissions.txt\n"
 	);
 }
 
@@ -269,7 +283,7 @@ int main(int argc, char *argv[])
 	float start_time = (float) clock() / CLOCKS_PER_SEC;
 
 	//Confirmation
-	if (!preview) {
+	if (!preview && !preview_unmodifiable) {
 		char confirm;
 
 		printf(dir_confirm_msg, working_path);
@@ -284,8 +298,16 @@ int main(int argc, char *argv[])
 
 	float total_time = ((float) clock() / CLOCKS_PER_SEC) - start_time;
 
-	const char *msg = (preview) ? preview_msg : success_msg;
-	printf(msg, files_n, folders_n);
+	if (!preview_unmodifiable) {
+		const char *msg = (preview) ? preview_msg : success_msg;
+		printf(msg, files_n, folders_n);
+	}
+
+	//Files error message
+	if (files_error_n > 0 || preview_unmodifiable) {
+		printf(files_error_msg, files_error_n);
+	}
+
 	printf(time_msg, total_time);
 
 	return 0;

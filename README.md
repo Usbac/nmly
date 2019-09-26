@@ -1,7 +1,7 @@
 <h1 align="center">Nmly</h1>
 
 <p align="center">
-<img src="https://img.shields.io/badge/version-0.9.5-blue.svg"> <img src="https://img.shields.io/badge/license-MIT-orange.svg">
+<img src="https://img.shields.io/badge/version-0.9.6-blue.svg"> <img src="https://img.shields.io/badge/license-MIT-orange.svg">
 </p>
 
 <h4 align="center">Nmly is a massive file renamer utility with useful functions and written in C.</h4>
@@ -40,24 +40,30 @@
 
 `-r` `--recursive` Apply the changes recursively in the directory
 
+`-u` `--unmodifiable` Show the files that cannot be modified
+
 `-v` `--version` Show the application version
 
 ## Examples
 
 ```console
-pc@usbac:~$ nmly switch - -d ./
+usbac@pc:~$ nmly switch - -d ./
 Author - Song.mp3 > Song - Author.mp3
 ```
 ```console
-pc@usbac:~$ nmly remove " 2017" -d ./vacations -e mp4
-video 2017.mp4 > video.mp4
+usbac@pc:~$ nmly remove " 2017" -d ./vacations -e mp4
+./vacations/video 2017.mp4 > ./vacations/video.mp4
 ```
 ```console
-pc@usbac:~$ nmly replace jpeg jpg -d ./
+usbac@pc:~$ nmly replace jpeg jpg -d ./
 picture.jpeg > picture.jpg
 ```
 ```console
-pc@usbac:~$ nmly after world -d ./ -r
+usbac@pc:~$ nmly after world -d ./ -r
 hello.pdf > helloworld.pdf
 subfolder/file.txt > subfolder/fileworld.txt 
+```
+```console
+usbac@pc:~$ nmly -u -d ./folder -r
+./folder/filewithpermissions.txt
 ```

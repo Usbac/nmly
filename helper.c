@@ -164,11 +164,7 @@ void strCases(char *dest, const char *str, const int upper)
 	size_t i;
 
 	for (i = 0; i < length; i++) {
-		if (upper) {
-			dest[i] = toupper(str[i]);
-		} else {
-			dest[i] = tolower(str[i]);
-		}
+		dest[i] = upper ? toupper(str[i]) : tolower(str[i]);
 	}
 
 	dest[i] = '\0';

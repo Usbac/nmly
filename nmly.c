@@ -18,7 +18,7 @@ const char *dir_confirm_msg = "Apply the changes in the following directory '%s'
 const char *compare_msg = "%s > %s \n";
 const char *time_msg = "\n%f Segs\n";
 const char *arg_error_msg = "Error: Invalid command\n";
-const char *version_msg = "Nmly v0.9.6\n";
+const char *version_msg = "Nmly v0.9.6.1\n";
 char *working_path = ".";
 char *filter = "";
 int files_n = 0, folders_n = 0, files_error_n = 0;
@@ -153,6 +153,13 @@ void processFile(char *entpath, char *argv[])
 int mapArgs(int argc, char *argv[]) 
 {
 	size_t i;
+	
+	//Show the help by default
+	if (argc == 1) {
+		help();
+		return 1;
+	}
+
 	for (i = 0; i < argc; i++) {
 		//Recursive
 		if (!strcmp(argv[i], "-r") || !strcmp(argv[i], "--recursive")) {

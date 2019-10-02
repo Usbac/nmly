@@ -15,14 +15,14 @@
  * @param path the path.
  * @return 1 if the specified path is a file, 0 otherwise.
  */
-int is_file(const char* path);
+int isFile(const char* path);
 
 /**
  * Returns 1 if the specified path is a directory, 0 otherwise.
  * @param path the path.
  * @return 1 if the specified path is a directory, 0 otherwise.
  */
-int is_dir(const char* path);
+int isDir(const char* path);
 
 /**
  * Returns the specified path with the changes applied.

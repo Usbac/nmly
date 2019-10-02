@@ -9,16 +9,17 @@
 #include "nmly.h"
 #include "helper.h"
 
-const char *single_str = "%s\n";
-const char *preview_msg = "\n%i File(s) to be modified in %i folder(s)";
-const char *success_msg = "\n%i File(s) modified in %i folder(s)";
-const char *files_error_msg = "\n%i File(s) cannot be modified. Maybe check your permissions?";
-const char *dir_error_msg = "Cannot open directory %s\n";
-const char *dir_confirm_msg = "Apply the changes in the following directory '%s'? [Y/n] ";
-const char *compare_msg = "%s > %s \n";
-const char *time_msg = "\n%f Segs\n";
-const char *arg_error_msg = "Error: Invalid command\n";
-const char *version_msg = "Nmly v0.9.6.1\n";
+const char *SINGLE_MSG = "%s\n";
+const char *PREVIEW_MSG = "\n%i File(s) to be modified in %i folder(s)";
+const char *SUCCESS_MSG = "\n%i File(s) modified in %i folder(s)";
+const char *FILES_ERROR_MSG = "\n%i File(s) cannot be modified. Maybe check your permissions?";
+const char *DIR_ERROR_MSG = "Cannot open directory %s\n";
+const char *DIR_CONFIRM_MSG = "Apply the changes in the following directory '%s'? [Y/n] ";
+const char *COMPARE_MSG = "%s > %s \n";
+const char *TIME_MSG = "\n%f Segs\n";
+const char *ARG_ERROR_MSG = "Error: Invalid command\n";
+const char *VERSION_MSG = "Nmly v0.9.6.2\n";
+
 char *working_path = ".";
 char *filter = "";
 int files_n = 0, folders_n = 0, files_error_n = 0;
@@ -29,19 +30,23 @@ int recursive = 0;
 int modify_folders = 0;
 
 
-int is_file(const char* path) 
+int isFile(const char* path) 
 {
 	struct stat buf;
-	stat(path, &buf);
+	if (stat(path, &buf) < 0) {
+		return 0;
+	}
 
 	return S_ISREG(buf.st_mode);
 }
 
 
-int is_dir(const char* path) 
+int isDir(const char* path) 
 {
 	struct stat buf;
-	stat(path, &buf);
+	if (stat(path, &buf) < 0) {
+		return 0;
+	}
 
 	return S_ISDIR(buf.st_mode);
 }
@@ -92,7 +97,7 @@ void listDir(char *basedir, char *argv[])
 	struct dirent *ent;
 
 	if ((dir = opendir(basedir)) == NULL) {
-		printf(preview_unmodifiable ? single_str : dir_error_msg, basedir);
+		printf(preview_unmodifiable ? SINGLE_MSG : DIR_ERROR_MSG, basedir);
 		files_error_n++;
 		return;
 	}
@@ -108,11 +113,11 @@ void listDir(char *basedir, char *argv[])
 		strcat(entpath, "/");
 		strcat(entpath, ent->d_name);
 
-		if (is_file(entpath) || (is_dir(entpath) && modify_folders)) {
+		if (isFile(entpath) || (isDir(entpath) && modify_folders)) {
 			processFile(entpath, argv);
 		}
 
-		if (recursive && is_dir(entpath)) {
+		if (recursive && isDir(entpath)) {
 			listDir(entpath, argv);
 			folders_n++;
 		}
@@ -143,7 +148,7 @@ void processFile(char *entpath, char *argv[])
 			rename(entpath, new_path);
 		}
 	
-		printf(compare_msg, entpath, new_path);
+		printf(COMPARE_MSG, entpath, new_path);
 	}
 
 	free(new_path);
@@ -194,7 +199,7 @@ int mapArgs(int argc, char *argv[])
 
 		//Version
 		if (!strcmp(argv[i], "-v") || !strcmp(argv[i], "--version")) {
-			printf("%s", version_msg);
+			printf("%s", VERSION_MSG);
 			return 1;
 		}
 
@@ -204,14 +209,12 @@ int mapArgs(int argc, char *argv[])
 
 		//Working path
 		if (!strcmp(argv[i], "-d") || !strcmp(argv[i], "--directory")) {
-			working_path = malloc(strlen(argv[++i]) * sizeof(char));
-			strcpy(working_path, argv[i]);
+			working_path = argv[++i];
 		}
 
 		//Extension filter
     		if (!strcmp(argv[i], "-e") || !strcmp(argv[i], "--extension")) {
-			filter = malloc(strlen(argv[++i]) * sizeof(char));
-			strcpy(filter, argv[i]);
+			filter = argv[++i];
 		}
 	}
 
@@ -233,7 +236,7 @@ int mapArgs(int argc, char *argv[])
 	} else if (!strcmp(argv[1], "remove")) {
 		option = REMOVE;
 	} else if (!preview_unmodifiable) {
-		printf("%s\n", arg_error_msg);
+		printf("%s\n", ARG_ERROR_MSG);
 		return 1;
 	}
 
@@ -293,10 +296,10 @@ int main(int argc, char *argv[])
 	if (!preview && !preview_unmodifiable) {
 		char confirm;
 
-		printf(dir_confirm_msg, working_path);
+		printf(DIR_CONFIRM_MSG, working_path);
 		scanf("%c", &confirm);
 
-		if (confirm != 'Y' && confirm != 'y') {
+		if (confirm != 'Y' && confirm != 'y' && confirm != '\n') {
 			return 0;
 		}
 	}
@@ -306,16 +309,16 @@ int main(int argc, char *argv[])
 	float total_time = ((float) clock() / CLOCKS_PER_SEC) - start_time;
 
 	if (!preview_unmodifiable) {
-		const char *msg = (preview) ? preview_msg : success_msg;
+		const char *msg = (preview) ? PREVIEW_MSG : SUCCESS_MSG;
 		printf(msg, files_n, folders_n);
 	}
 
 	//Files error message
 	if (files_error_n > 0 || preview_unmodifiable) {
-		printf(files_error_msg, files_error_n);
+		printf(FILES_ERROR_MSG, files_error_n);
 	}
 
-	printf(time_msg, total_time);
+	printf(TIME_MSG, total_time);
 
 	return 0;
 }

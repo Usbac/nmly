@@ -28,6 +28,14 @@ int preview = 0;
 int preview_unmodifiable = 0;
 int recursive = 0;
 int modify_folders = 0;
+long size = -1;
+enum SIZE_TYPE {
+	LT,
+	GT,
+	EQ
+};
+enum SIZE_TYPE sz_type;
+
 
 
 int isFile(const char* path) 
@@ -51,6 +59,31 @@ int isDir(const char* path)
 	return S_ISDIR(buf.st_mode);
 }
 
+unsigned long getFileSize(const char* path)
+{
+	struct stat buf;
+	if (stat(path, &buf) < 0) {
+		return 0;
+	}
+	return buf.st_size;
+}
+
+int sizeFilter(char *path) {
+	unsigned long filesize;
+	filesize = getFileSize(path);
+	int ret = 0;
+	switch(sz_type) {
+	case GT:
+		ret = filesize >= size;
+		break;
+	case LT:
+		ret = filesize < size;
+		break;
+	case EQ:
+		ret = filesize == size;
+	}
+	return ret;
+}
 
 char *getChanges(char *path, char *argv[]) 
 {
@@ -63,7 +96,10 @@ char *getChanges(char *path, char *argv[])
 	if (filter[0] != '\0' && (extension == NULL || strcmp(extension, filter))) {
 		return NULL;
 	}
-
+	//Matches filter by file size
+	if (size != -1 && !sizeFilter(path)) {
+		return NULL;
+	}
 	switch (option) {
 		case BEFORE: new_path = before(dir, filename, argv[2]);
 			break;
@@ -154,6 +190,39 @@ void processFile(char *entpath, char *argv[])
 	free(new_path);
 }
 
+void parse_sizeargs(char *str) {
+	char sign = str[0];
+	char *suffix;
+	int kbytes = 1024;
+	switch (sign) {
+		case '+':
+			sz_type = GT;
+			break;
+		case '-':
+			sz_type = LT;
+			break;
+		default:
+			sz_type = EQ;
+	}
+	if (sz_type != EQ) {
+		str++;
+	}
+	size = strtoul(str, &suffix, 10);
+	switch(*suffix) {
+		case 'G':
+		case 'g':
+			size = size * kbytes * kbytes * kbytes;
+			break;
+		case 'M':
+		case 'm':
+			size = size * kbytes * kbytes;
+			break;
+		case 'K':
+		case 'k':
+			size = size * kbytes;
+			break;
+	}
+}
 
 int mapArgs(int argc, char *argv[]) 
 {
@@ -201,6 +270,11 @@ int mapArgs(int argc, char *argv[])
 		if (!strcmp(argv[i], "-v") || !strcmp(argv[i], "--version")) {
 			printf("%s", VERSION_MSG);
 			return 1;
+		}
+
+		//Size
+		if (!strcmp(argv[i], "-s") || !strcmp(argv[i], "-s")) {
+			parse_sizeargs(argv[++i]);
 		}
 
 		if (i+1 > argc) {
@@ -267,7 +341,8 @@ void help()
 		"-p --preview           Show the changes without applying them\n"
 		"-r --recursive         Apply the changes recursively in the directory\n"
 		"-u --unmodifiable      Show the files that cannot be modified\n"
-		"-v --version           Show the application version\n\n"
+		"-v --version           Show the application version\n"
+		"-s --size	[size]	Apply changes only to the files with specified filesize(+/-)\n\n"
 		"EXAMPLES\n\n"
 		"$ nmly switch - -d ./\n"
 		"Author - Song.mp3 > Song - Author.mp3\n\n"
@@ -289,7 +364,6 @@ int main(int argc, char *argv[])
 	if (mapArgs(argc, argv)) {
 		return 0;
 	}
-
 	float start_time = (float) clock() / CLOCKS_PER_SEC;
 
 	//Confirmation

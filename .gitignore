@@ -1,6 +1,8 @@
 .vscode/
 nmly.exe
 nmly
+helper.o
+nmly.o
 .nmly.c.swp
 .nmly.h.swp
 .helper.c.swp

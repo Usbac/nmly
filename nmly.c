@@ -9,17 +9,6 @@
 #include "nmly.h"
 #include "helper.h"
 
-const char *SINGLE_MSG = "%s\n";
-const char *PREVIEW_MSG = "\n%i File(s) to be modified in %i folder(s)";
-const char *SUCCESS_MSG = "\n%i File(s) modified in %i folder(s)";
-const char *FILES_ERROR_MSG = "\n%i File(s) cannot be modified. Maybe check your permissions?";
-const char *DIR_ERROR_MSG = "Cannot open directory %s\n";
-const char *DIR_CONFIRM_MSG = "Apply the changes in the following directory '%s'? [Y/n] ";
-const char *COMPARE_MSG = "%s > %s \n";
-const char *TIME_MSG = "\n%f Segs\n";
-const char *ARG_ERROR_MSG = "Error: Invalid command\n";
-const char *VERSION_MSG = "Nmly v0.9.6.2\n";
-
 char *working_path = ".";
 char *filter = "";
 int files_n = 0, folders_n = 0, files_error_n = 0;
@@ -28,14 +17,13 @@ int preview = 0;
 int preview_unmodifiable = 0;
 int recursive = 0;
 int modify_folders = 0;
-long size = -1;
+long size_filter = -1;
 enum SIZE_TYPE {
 	LT,
 	GT,
 	EQ
 };
-enum SIZE_TYPE sz_type;
-
+enum SIZE_TYPE file_size;
 
 
 int isFile(const char* path) 
@@ -59,31 +47,36 @@ int isDir(const char* path)
 	return S_ISDIR(buf.st_mode);
 }
 
+
 unsigned long getFileSize(const char* path)
 {
 	struct stat buf;
 	if (stat(path, &buf) < 0) {
 		return 0;
 	}
+
 	return buf.st_size;
 }
+
 
 int sizeFilter(char *path) {
 	unsigned long filesize;
 	filesize = getFileSize(path);
-	int ret = 0;
-	switch(sz_type) {
-	case GT:
-		ret = filesize >= size;
-		break;
-	case LT:
-		ret = filesize < size;
-		break;
-	case EQ:
-		ret = filesize == size;
+
+	switch(file_size) {
+		case GT:
+			return filesize >= size_filter;
+			break;
+		case LT:
+			return filesize < size_filter;
+			break;
+		case EQ:
+			return filesize == size_filter;
 	}
-	return ret;
+
+	return 0;
 }
+
 
 char *getChanges(char *path, char *argv[]) 
 {
@@ -96,10 +89,12 @@ char *getChanges(char *path, char *argv[])
 	if (filter[0] != '\0' && (extension == NULL || strcmp(extension, filter))) {
 		return NULL;
 	}
+
 	//Matches filter by file size
-	if (size != -1 && !sizeFilter(path)) {
+	if (size_filter != -1 && !sizeFilter(path)) {
 		return NULL;
 	}
+
 	switch (option) {
 		case BEFORE: new_path = before(dir, filename, argv[2]);
 			break;
@@ -190,39 +185,43 @@ void processFile(char *entpath, char *argv[])
 	free(new_path);
 }
 
-void parse_sizeargs(char *str) {
+
+void parseSizeArgs(char *str) {
 	char sign = str[0];
 	char *suffix;
-	int kbytes = 1024;
+
 	switch (sign) {
 		case '+':
-			sz_type = GT;
+			file_size = GT;
 			break;
 		case '-':
-			sz_type = LT;
+			file_size = LT;
 			break;
 		default:
-			sz_type = EQ;
+			file_size = EQ;
 	}
-	if (sz_type != EQ) {
+
+	if (file_size != EQ) {
 		str++;
 	}
-	size = strtoul(str, &suffix, 10);
+
+	size_filter = strtoul(str, &suffix, 10);
 	switch(*suffix) {
 		case 'G':
 		case 'g':
-			size = size * kbytes * kbytes * kbytes;
+			size_filter = size_filter * KBYTE * KBYTE * KBYTE;
 			break;
 		case 'M':
 		case 'm':
-			size = size * kbytes * kbytes;
+			size_filter = size_filter * KBYTE * KBYTE;
 			break;
 		case 'K':
 		case 'k':
-			size = size * kbytes;
+			size_filter = size_filter * KBYTE;
 			break;
 	}
 }
+
 
 int mapArgs(int argc, char *argv[]) 
 {
@@ -272,13 +271,13 @@ int mapArgs(int argc, char *argv[])
 			return 1;
 		}
 
-		//Size
-		if (!strcmp(argv[i], "-s") || !strcmp(argv[i], "-s")) {
-			parse_sizeargs(argv[++i]);
-		}
-
 		if (i+1 > argc) {
 			return 0;
+		}
+
+		//Size
+		if (!strcmp(argv[i], "-s") || !strcmp(argv[i], "--size")) {
+			parseSizeArgs(argv[++i]);
 		}
 
 		//Working path
@@ -324,8 +323,8 @@ void help()
 		"USAGE \n\n"
 		"$ nmly [Arg] [options...]\n\n"
 		"ARGUMENTS\n\n"
-		"after [text]         Add the text at the end of the filenames\n"
-		"before [text]        Add the text at the begining of the filenames\n"
+		"after [text]         Add text at the end of the filenames\n"
+		"before [text]        Add text at the begining of the filenames\n"
 		"lower                All filename characters to lowercase\n"
 		"remove [text]        Remove the specified text from the filename\n"
 		"replace [ori] [new]  Replace a text with a new one\n"
@@ -334,20 +333,22 @@ void help()
 		"upper                All filename characters to uppercase\n\n"
 		"OPTIONS\n\n"
 		"-d --directory [text]  The directory where the changes will be applied\n"
-		"-e --extension [text]  Apply the changes only to the files with that extension\n"
-		"-f --folders           Apply the changes to the folders name too\n"
+		"-e --extension [text]  Apply changes only to the files with that extension\n"
+		"-f --folders           Apply changes to the folders name too\n"
 		"-h --help              Get help and information about the application\n"
 		"-l --locale            Accept special characters (like latin characters)\n"
 		"-p --preview           Show the changes without applying them\n"
 		"-r --recursive         Apply the changes recursively in the directory\n"
+		"-s --size [size]       Apply changes only to the files with specified filesize (+/-)(g/m/k)\n"
 		"-u --unmodifiable      Show the files that cannot be modified\n"
-		"-v --version           Show the application version\n"
-		"-s --size	[size]	Apply changes only to the files with specified filesize(+/-)\n\n"
+		"-v --version           Show the application version\n\n"
 		"EXAMPLES\n\n"
 		"$ nmly switch - -d ./\n"
 		"Author - Song.mp3 > Song - Author.mp3\n\n"
 		"$ nmly remove ' 2017' -d ./vacations -e mp4\n"
 		"./vacations/video 2017.mp4 > ./vacations/video.mp4\n\n"
+		"$ nmly -d ./folder -s +1g\n"
+		"./folder/fileBiggerThan1GB.iso\n\n"
 		"$ nmly replace jpeg jpg -d ./\n"
 		"picture.jpeg > picture.jpg\n\n"
 		"$ nmly after world -d ./ -r\n"

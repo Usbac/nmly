@@ -1,7 +1,7 @@
 <h1 align="center">Nmly</h1>
 
 <p align="center">
-<img src="https://img.shields.io/badge/version-0.9.6.2-blue.svg"> <img src="https://img.shields.io/badge/license-MIT-orange.svg">
+<img src="https://img.shields.io/badge/version-0.9.7-blue.svg"> <img src="https://img.shields.io/badge/license-MIT-orange.svg">
 </p>
 
 <h4 align="center">Nmly is a massive file renamer utility with useful functions and written in C.</h4>
@@ -40,6 +40,8 @@
 
 `-r` `--recursive` Apply the changes recursively in the directory
 
+`-s` `--size [size]` Apply changes only to the files with specified filesize (+/-)(g/m/k)
+
 `-u` `--unmodifiable` Show the files that cannot be modified
 
 `-v` `--version` Show the application version
@@ -53,6 +55,10 @@ Author - Song.mp3 > Song - Author.mp3
 ```console
 usbac@pc:~$ nmly remove " 2017" -d ./vacations -e mp4
 ./vacations/video 2017.mp4 > ./vacations/video.mp4
+```
+```console
+usbac@pc:~$ nmly -d ./folder -s +1g
+./folder/fileBiggerThan1GB.iso
 ```
 ```console
 usbac@pc:~$ nmly replace jpeg jpg -d ./

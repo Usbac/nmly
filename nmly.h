@@ -9,9 +9,53 @@
 #define DIR_ERROR_MSG "Cannot open directory %s\n"
 #define DIR_CONFIRM_MSG "Apply the changes in the following directory '%s'? [Y/n] "
 #define COMPARE_MSG "%s > %s \n"
+#define SPLIT_COMPARE_MSG "%s\n%s\n\n"
 #define TIME_MSG "\n%f Segs\n"
 #define ARG_ERROR_MSG "Error: Invalid command\n"
-#define VERSION_MSG "Nmly v0.9.7\n"
+#define VERSION_MSG "Nmly v0.9.8\n"
+#define HELP_MSG "USAGE \n\n" \
+		"$ nmly [Arg] [options...]\n\n" \
+		"ARGUMENTS\n\n" \
+		"after [text]         Add text at the end of the filenames\n" \
+		"before [text]        Add text at the begining of the filenames\n" \
+		"lower                All filename characters to lowercase\n" \
+		"remove [text]        Remove the specified text from the filename\n" \
+		"replace [ori] [new]  Replace a text with a new one\n" \
+		"reverse              Reverse the filename\n" \
+		"switch [sep]         Switch the filename order based in a separator\n" \
+		"upper                All filename characters to uppercase\n\n" \
+		"OPTIONS\n\n" \
+		"-d --directory [text]  The directory where the changes will be applied\n" \
+		"-e --extension [text]  Apply changes only to the files with that extension\n" \
+		"-f --folders           Apply changes to the folders name too\n" \
+		"-h --help              Get help and information about the application\n" \
+		"-l --locale            Accept special characters (like latin characters)\n" \
+		"-p --preview           Show the changes without applying them\n" \
+		"-r --recursive         Apply the changes recursively in the directory\n" \
+		"-s --size [size]       Apply changes only to the files with specified filesize (+/-)(g/m/k)\n" \
+        "   --split             Display the changes horizontally split\n" \
+		"-u --unmodifiable      Show the files that cannot be modified\n" \
+		"-v --version           Show the application version\n\n" \
+		"EXAMPLES\n\n" \
+		"$ nmly switch - -d ./\n" \
+		"Author - Song.mp3 > Song - Author.mp3\n\n" \
+		"$ nmly remove ' 2017' -d ./vacations -e mp4\n" \
+		"./vacations/video 2017.mp4 > ./vacations/video.mp4\n\n" \
+		"$ nmly -d ./folder -s +1g\n" \
+		"./folder/fileBiggerThan1GB.iso\n\n" \
+		"$ nmly replace jpeg jpg -d ./\n" \
+		"picture.jpeg > picture.jpg\n\n" \
+		"$ nmly after world -d ./ -r\n" \
+		"hello.pdf > helloworld.pdf\n" \
+		"subfolder/file.txt > subfolder/fileworld.txt\n\n" \
+        "$ nmly upper -d ./ -r --split\n" \
+        "hello.pdf\n" \
+        "HELLO.pdf\n\n" \
+        "subfolder/file.txt\n" \
+        "subfolder/FILE.txt\n\n" \
+		"$ nmly -u -d ./folder -r\n" \
+		"./folder/filewithpermissions.txt\n"
+        
 #define BEFORE 0
 #define AFTER 1
 #define REPLACE 2
@@ -89,10 +133,5 @@ void parseSizeArgs(char *str);
  * must be stopped after this function, 0 otherwise.
  */
 int mapArgs(int argc, char *argv[]);
-
-/**
- * Display the help text.
- */
-void help();
 
 #endif // NMLY_H_

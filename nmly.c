@@ -13,8 +13,8 @@ char *working_path = ".";
 char *filter = "";
 int files_n = 0, folders_n = 0, files_error_n = 0;
 int option = 0;
-int preview = 0;
-int preview_unmodifiable = 0;
+int split_view = 0;
+int preview = 0, preview_unmodifiable = 0;
 int recursive = 0;
 int modify_folders = 0;
 long size_filter = -1;
@@ -23,7 +23,7 @@ enum SIZE_TYPE {
 	GT,
 	EQ
 };
-enum SIZE_TYPE file_size;
+enum SIZE_TYPE size_type;
 
 
 int isFile(const char* path) 
@@ -60,10 +60,9 @@ unsigned long getFileSize(const char* path)
 
 
 int sizeFilter(char *path) {
-	unsigned long filesize;
-	filesize = getFileSize(path);
+	unsigned long filesize = getFileSize(path);
 
-	switch(file_size) {
+	switch(size_type) {
 		case GT:
 			return filesize >= size_filter;
 			break;
@@ -179,7 +178,7 @@ void processFile(char *entpath, char *argv[])
 			rename(entpath, new_path);
 		}
 	
-		printf(COMPARE_MSG, entpath, new_path);
+		printf(split_view ? SPLIT_COMPARE_MSG : COMPARE_MSG, entpath, new_path);
 	}
 
 	free(new_path);
@@ -192,16 +191,16 @@ void parseSizeArgs(char *str) {
 
 	switch (sign) {
 		case '+':
-			file_size = GT;
+			size_type = GT;
 			break;
 		case '-':
-			file_size = LT;
+			size_type = LT;
 			break;
 		default:
-			file_size = EQ;
+			size_type = EQ;
 	}
 
-	if (file_size != EQ) {
+	if (size_type != EQ) {
 		str++;
 	}
 
@@ -229,7 +228,7 @@ int mapArgs(int argc, char *argv[])
 	
 	//Show the help by default
 	if (argc == 1) {
-		help();
+		printf(HELP_MSG);
 		return 1;
 	}
 
@@ -254,6 +253,11 @@ int mapArgs(int argc, char *argv[])
 			setlocale(LC_ALL, "");
 		}
 
+		//Split view
+		if (!strcmp(argv[i], "--split")) {
+			split_view = 1;
+		}
+
 		//List unmodifiable files
 		if (!strcmp(argv[i], "-u") || !strcmp(argv[i], "--unmodifiable")) {
 			preview_unmodifiable = 1;
@@ -261,7 +265,7 @@ int mapArgs(int argc, char *argv[])
 
 		//Help
 		if (!strcmp(argv[i], "-h") || !strcmp(argv[i], "--help")) {
-			help();
+			printf(HELP_MSG);
 			return 1;
 		}
 
@@ -275,11 +279,6 @@ int mapArgs(int argc, char *argv[])
 			return 0;
 		}
 
-		//Size
-		if (!strcmp(argv[i], "-s") || !strcmp(argv[i], "--size")) {
-			parseSizeArgs(argv[++i]);
-		}
-
 		//Working path
 		if (!strcmp(argv[i], "-d") || !strcmp(argv[i], "--directory")) {
 			working_path = argv[++i];
@@ -288,6 +287,11 @@ int mapArgs(int argc, char *argv[])
 		//Extension filter
     		if (!strcmp(argv[i], "-e") || !strcmp(argv[i], "--extension")) {
 			filter = argv[++i];
+		}
+
+		//Size
+		if (!strcmp(argv[i], "-s") || !strcmp(argv[i], "--size")) {
+			parseSizeArgs(argv[++i]);
 		}
 	}
 
@@ -309,54 +313,11 @@ int mapArgs(int argc, char *argv[])
 	} else if (!strcmp(argv[1], "remove")) {
 		option = REMOVE;
 	} else if (!preview_unmodifiable) {
-		printf("%s\n", ARG_ERROR_MSG);
+		printf(SINGLE_MSG, ARG_ERROR_MSG);
 		return 1;
 	}
 
 	return 0;
-}
-
-
-void help()
-{
-	printf(
-		"USAGE \n\n"
-		"$ nmly [Arg] [options...]\n\n"
-		"ARGUMENTS\n\n"
-		"after [text]         Add text at the end of the filenames\n"
-		"before [text]        Add text at the begining of the filenames\n"
-		"lower                All filename characters to lowercase\n"
-		"remove [text]        Remove the specified text from the filename\n"
-		"replace [ori] [new]  Replace a text with a new one\n"
-		"reverse              Reverse the filename\n"
-		"switch [sep]         Switch the filename order based in a separator\n"
-		"upper                All filename characters to uppercase\n\n"
-		"OPTIONS\n\n"
-		"-d --directory [text]  The directory where the changes will be applied\n"
-		"-e --extension [text]  Apply changes only to the files with that extension\n"
-		"-f --folders           Apply changes to the folders name too\n"
-		"-h --help              Get help and information about the application\n"
-		"-l --locale            Accept special characters (like latin characters)\n"
-		"-p --preview           Show the changes without applying them\n"
-		"-r --recursive         Apply the changes recursively in the directory\n"
-		"-s --size [size]       Apply changes only to the files with specified filesize (+/-)(g/m/k)\n"
-		"-u --unmodifiable      Show the files that cannot be modified\n"
-		"-v --version           Show the application version\n\n"
-		"EXAMPLES\n\n"
-		"$ nmly switch - -d ./\n"
-		"Author - Song.mp3 > Song - Author.mp3\n\n"
-		"$ nmly remove ' 2017' -d ./vacations -e mp4\n"
-		"./vacations/video 2017.mp4 > ./vacations/video.mp4\n\n"
-		"$ nmly -d ./folder -s +1g\n"
-		"./folder/fileBiggerThan1GB.iso\n\n"
-		"$ nmly replace jpeg jpg -d ./\n"
-		"picture.jpeg > picture.jpg\n\n"
-		"$ nmly after world -d ./ -r\n"
-		"hello.pdf > helloworld.pdf\n"
-		"subfolder/file.txt > subfolder/fileworld.txt\n\n"
-		"$ nmly -u -d ./folder -r\n"
-		"./folder/filewithpermissions.txt\n"
-	);
 }
 
 

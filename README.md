@@ -1,7 +1,7 @@
 <h1 align="center">Nmly</h1>
 
 <p align="center">
-<img src="https://img.shields.io/badge/version-0.9.7-blue.svg"> <img src="https://img.shields.io/badge/license-MIT-orange.svg">
+<img src="https://img.shields.io/badge/version-0.9.8-blue.svg"> <img src="https://img.shields.io/badge/license-MIT-orange.svg">
 </p>
 
 <h4 align="center">Nmly is a massive file renamer utility with useful functions and written in C.</h4>
@@ -42,6 +42,8 @@
 
 `-s` `--size [size]` Apply changes only to the files with specified filesize (+/-)(g/m/k)
 
+`--split` Display the changes horizontally split
+
 `-u` `--unmodifiable` Show the files that cannot be modified
 
 `-v` `--version` Show the application version
@@ -68,6 +70,14 @@ picture.jpeg > picture.jpg
 usbac@pc:~$ nmly after world -d ./ -r
 hello.pdf > helloworld.pdf
 subfolder/file.txt > subfolder/fileworld.txt 
+```
+```console
+usbac@pc:~$ nmly upper -d ./ -r --split
+hello.pdf
+HELLO.pdf
+
+subfolder/file.txt
+subfolder/FILE.txt 
 ```
 ```console
 usbac@pc:~$ nmly -u -d ./folder -r

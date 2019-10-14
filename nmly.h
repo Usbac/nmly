@@ -2,6 +2,7 @@
 #define NMLY_H_
 
 #define KBYTE 1024
+#define EMPTY ""
 #define SINGLE_MSG "%s\n"
 #define PREVIEW_MSG "\n%i File(s) to be modified in %i folder(s)"
 #define SUCCESS_MSG "\n%i File(s) modified in %i folder(s)"

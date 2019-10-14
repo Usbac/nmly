@@ -10,7 +10,7 @@
 #include "helper.h"
 
 char *working_path = ".";
-char *filter = "";
+char *filter = EMPTY;
 int files_n = 0, folders_n = 0, files_error_n = 0;
 int option = 0;
 int split_view = 0;
@@ -23,7 +23,7 @@ enum SIZE_TYPE {
 	GT,
 	EQ
 };
-enum SIZE_TYPE size_type;
+enum SIZE_TYPE size_type_filter;
 
 
 int isFile(const char* path) 
@@ -62,7 +62,7 @@ unsigned long getFileSize(const char* path)
 int sizeFilter(char *path) {
 	unsigned long filesize = getFileSize(path);
 
-	switch(size_type) {
+	switch(size_type_filter) {
 		case GT:
 			return filesize >= size_filter;
 			break;
@@ -109,7 +109,7 @@ char *getChanges(char *path, char *argv[])
 			break;
 		case REPLACE: new_path = replace(dir, filename, argv[2], argv[3]);
 			break;
-		case REMOVE: new_path = replace(dir, filename, argv[2], "");
+		case REMOVE: new_path = replace(dir, filename, argv[2], EMPTY);
 			break;
 	}
 
@@ -123,7 +123,6 @@ char *getChanges(char *path, char *argv[])
 void listDir(char *basedir, char *argv[])
 {
 	DIR *dir;
-	char b[BUFFER];
 	struct dirent *ent;
 
 	if ((dir = opendir(basedir)) == NULL) {
@@ -138,10 +137,9 @@ void listDir(char *basedir, char *argv[])
 			continue;
 		}
 
-		char *entpath = malloc((strlen(basedir) + strlen(ent->d_name) + 2) * sizeof(char));
-		strcpy(entpath, basedir);
-		strcat(entpath, "/");
-		strcat(entpath, ent->d_name);
+		int length = (strlen(basedir) + strlen(ent->d_name) + 2) * sizeof(char);
+		char *entpath = malloc(length);
+		snprintf(entpath, length, "%s/%s", basedir, ent->d_name);
 
 		if (isFile(entpath) || (isDir(entpath) && modify_folders)) {
 			processFile(entpath, argv);
@@ -191,16 +189,16 @@ void parseSizeArgs(char *str) {
 
 	switch (sign) {
 		case '+':
-			size_type = GT;
+			size_type_filter = GT;
 			break;
 		case '-':
-			size_type = LT;
+			size_type_filter = LT;
 			break;
 		default:
-			size_type = EQ;
+			size_type_filter = EQ;
 	}
 
-	if (size_type != EQ) {
+	if (size_type_filter != EQ) {
 		str++;
 	}
 
@@ -250,7 +248,7 @@ int mapArgs(int argc, char *argv[])
 
 		//Locale (special characters)
 		if (!strcmp(argv[i], "-l") || !strcmp(argv[i], "--locale")) {
-			setlocale(LC_ALL, "");
+			setlocale(LC_ALL, EMPTY);
 		}
 
 		//Split view
@@ -344,12 +342,12 @@ int main(int argc, char *argv[])
 
 	float total_time = ((float) clock() / CLOCKS_PER_SEC) - start_time;
 
+	//Messages
 	if (!preview_unmodifiable) {
 		const char *msg = (preview) ? PREVIEW_MSG : SUCCESS_MSG;
 		printf(msg, files_n, folders_n);
 	}
 
-	//Files error message
 	if (files_error_n > 0 || preview_unmodifiable) {
 		printf(FILES_ERROR_MSG, files_error_n);
 	}

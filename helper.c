@@ -98,12 +98,9 @@ char *strAfter(const char *str, const char character)
 
 char *before(const char *dir, const char *filename, const char *text)
 {
-	char *new = malloc((strlen(dir) + strlen(filename) + strlen(text) + 2) * sizeof(char));
-	
-	strcpy(new, dir);
-	strcat(new, "/");
-	strcat(new, text);
-	strcat(new, filename);
+	int length = (strlen(dir) + strlen(filename) + strlen(text) + 2) * sizeof(char);
+	char *new = malloc(length);
+	snprintf(new, length, "%s/%s%s", dir, text, filename);
 
 	return new;
 }

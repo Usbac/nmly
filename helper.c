@@ -49,10 +49,9 @@ char *strrev(char *str)
 
 char *fullFilename(const char *dir, const char *filename)
 {
-	char *path = malloc(strlen(dir) + strlen(filename) + 2);
-	strcpy(path, dir);
-	strcat(path, "/");
-	strcat(path, filename);
+	int length = (strlen(dir) + strlen(filename) + 2) * sizeof(char);
+	char *path = malloc(length);
+	snprintf(path, length, "%s/%s", dir, filename);
 
 	return path;
 }
@@ -220,10 +219,9 @@ char *replace(const char *dir, const char *filename, const char *ori, const char
 		return NULL;
 	}
 
-	char *new = malloc(strlen(dir) + strlen(replaced) + 2);
-	strcpy(new, dir);
-	strcat(new, "/");
-	strcat(new, replaced);
+	int length = (strlen(dir) + strlen(replaced) + 2) * sizeof(char);
+	char *new = malloc(length);
+	snprintf(new, length, "%s/%s", dir, replaced);
 
 	free(replaced);
 

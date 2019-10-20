@@ -77,46 +77,25 @@ int sizeFilter(char *path) {
 }
 
 
-char *getChanges(char *path, char *argv[]) 
+void getChanges(char **new_path, char *dir, char *filename, char *argv[]) 
 {
-	char *dir = strBefore(path, '/');
-	char *filename = strAfter(path, '/');
-	char *new_path = NULL;
-	
-	//Matches filter by extension
-	char *extension = strAfter(filename, '.');
-	if (filter[0] != '\0' && (extension == NULL || strcmp(extension, filter))) {
-		return NULL;
-	}
-
-	//Matches filter by file size
-	if (size_filter != -1 && !sizeFilter(path)) {
-		return NULL;
-	}
-
 	switch (option) {
-		case BEFORE: new_path = before(dir, filename, argv[2]);
+		case BEFORE: before(&*new_path, dir, filename, argv[2]);
 			break;
-		case AFTER: new_path = after(dir, filename, argv[2]);
+		case AFTER: after(&*new_path, dir, filename, argv[2]);
 			break;
-		case UPPER: new_path = upper(dir, filename);
+		case UPPER: upper(&*new_path, dir, filename);
 			break;
-		case LOWER: new_path = lower(dir, filename);
+		case LOWER: lower(&*new_path, dir, filename);
 			break;
-		case SWITCH: new_path = switchSides(dir, filename, argv[2][0]);
+		case SWITCH: switchSides(&*new_path, dir, filename, argv[2][0]);
 			break;
-		case REVERSE: new_path = reverse(dir, filename);
+		case REVERSE: reverse(&*new_path, dir, filename);
 			break;
-		case REPLACE: new_path = replace(dir, filename, argv[2], argv[3]);
+		case REPLACE: replace(&*new_path, dir, filename, argv[2], argv[3]);
 			break;
-		case REMOVE: new_path = replace(dir, filename, argv[2], EMPTY);
-			break;
+		case REMOVE: replace(&*new_path, dir, filename, argv[2], EMPTY);
 	}
-
-	free(dir);
-	free(filename);
-
-	return new_path;
 }
 
 
@@ -126,7 +105,12 @@ void listDir(char *basedir, char *argv[])
 	struct dirent *ent;
 
 	if ((dir = opendir(basedir)) == NULL) {
-		printf(preview_unmodifiable ? SINGLE_MSG : DIR_ERROR_MSG, basedir);
+		if (preview_unmodifiable) {
+			printf(SINGLE_MSG, basedir);
+		} else {
+			printf(split_view ? SPLIT_DIR_ERROR_MSG : DIR_ERROR_MSG, basedir);
+		}
+		
 		files_error_n++;
 		return;
 	}
@@ -161,25 +145,69 @@ void listDir(char *basedir, char *argv[])
 
 void processFile(char *entpath, char *argv[])
 {
-	char *new_path = getChanges(entpath, argv);
+	char *dir = strBefore(entpath, '/');
+	char *file = strAfter(entpath, '/');
+	char *new_path;
 
-	if (new_path == NULL) {
-		free(new_path);
-		
+	if (!matchesFilters(entpath)) {
+		free(dir);
+		free(file);
 		return;
 	}
-
-	files_n++;
-
-	if (!preview_unmodifiable) {
-		if (!preview) {
-			rename(entpath, new_path);
-		}
 	
-		printf(split_view ? SPLIT_COMPARE_MSG : COMPARE_MSG, entpath, new_path);
+	int len = 0;
+	switch (option) {
+		case BEFORE: case AFTER:
+			len = strlen(dir) + strlen(file) + strlen(argv[2]) + 2;
+			break;
+		case UPPER: case LOWER: case SWITCH: case REVERSE:
+			len = strlen(dir) + strlen(file) + 2;
+			break;
+		case REPLACE: case REMOVE:
+			len = BUFFER;
+	}
+
+	new_path = malloc(len * sizeof(char));
+	getChanges(&new_path, dir, file, argv);
+
+	if (new_path != NULL) {
+		files_n++;
+
+		if (!preview_unmodifiable) {
+			if (!preview) {
+				rename(entpath, new_path);
+			}
+		
+			printf(split_view ? SPLIT_COMPARE_MSG : COMPARE_MSG, entpath, new_path);
+		}
 	}
 
 	free(new_path);
+	free(dir);
+	free(file);
+}
+
+
+int matchesFilters(char *entpath)
+{
+	int matches = 1;
+	char *file = strAfter(entpath, '/');
+
+	//Matches filter by extension
+	char *ext = strAfter(file, '.');
+	if (filter[0] != '\0' && (ext == NULL || strcmp(ext, filter))) {
+		matches = 0;
+	}
+
+	//Matches filter by file size
+	if (size_filter != -1 && !sizeFilter(entpath)) {
+		matches = 0;
+	}
+
+	free(file);
+	free(ext);
+
+	return matches;
 }
 
 
@@ -204,16 +232,13 @@ void parseSizeArgs(char *str) {
 
 	size_filter = strtoul(str, &suffix, 10);
 	switch(*suffix) {
-		case 'G':
-		case 'g':
+		case 'G': case 'g':
 			size_filter = size_filter * KBYTE * KBYTE * KBYTE;
 			break;
-		case 'M':
-		case 'm':
+		case 'M': case 'm':
 			size_filter = size_filter * KBYTE * KBYTE;
 			break;
-		case 'K':
-		case 'k':
+		case 'K': case 'k':
 			size_filter = size_filter * KBYTE;
 			break;
 	}
@@ -324,6 +349,7 @@ int main(int argc, char *argv[])
 	if (mapArgs(argc, argv)) {
 		return 0;
 	}
+
 	float start_time = (float) clock() / CLOCKS_PER_SEC;
 
 	//Confirmation

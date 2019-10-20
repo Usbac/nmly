@@ -8,6 +8,7 @@
 #define SUCCESS_MSG "\n%i File(s) modified in %i folder(s)"
 #define FILES_ERROR_MSG "\n%i File(s) cannot be modified. Maybe check your permissions?"
 #define DIR_ERROR_MSG "Cannot open directory %s\n"
+#define SPLIT_DIR_ERROR_MSG "Cannot open directory %s\n\n"
 #define DIR_CONFIRM_MSG "Apply the changes in the following directory '%s'? [Y/n] "
 #define COMPARE_MSG "%s > %s \n"
 #define SPLIT_COMPARE_MSG "%s\n%s\n\n"
@@ -99,12 +100,13 @@ unsigned long getFileSize(const char* path);
 int sizeFilter(char *path);
 
 /**
- * Returns the specified path with the changes applied.
+ * Stores in the specified path with the changes applied 
+ * in the given directory.
+ * @param new_path the new path.
  * @param path the path.
  * @param argv the arguments array.
- * @return the specified path with the changes applied.
  */
-char *getChanges(char *path, char *argv[]);
+void getChanges(char **new_path, char *dir, char *filename, char *argv[]);
 
 /**
  * Apply or preview the changes over the specified directory.
@@ -119,6 +121,13 @@ void listDir(char *basedir, char *argv[]);
  * @param argv the arguments array.
  */
 void processFile(char *entpath, char *argv[]);
+
+/**
+ * Returns 1 if the given file matches the filters,
+ * 0 otherwise
+ * @param entpath the file path.
+ */
+int matchesFilters(char *entpath);
 
 /**
  * Parse the file size based filter.

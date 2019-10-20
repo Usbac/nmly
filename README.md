@@ -1,10 +1,14 @@
 <h1 align="center">Nmly</h1>
 
 <p align="center">
-<img src="https://img.shields.io/badge/version-0.9.8-blue.svg"> <img src="https://img.shields.io/badge/license-MIT-orange.svg">
+<img src="https://img.shields.io/badge/version-0.9.9-blue.svg"> <img src="https://img.shields.io/badge/license-MIT-orange.svg">
 </p>
 
 <h4 align="center">Nmly is a massive file renamer utility with useful functions and written in C.</h4>
+
+Why use it? Because it's extremely easy, includes multiple useful features like preview the changes, filtrer files based on its extensions and size, an option to work recursively or not and much more.
+
+And yes, it's obviously extremely fast. ;)
 
 ## Arguments
 

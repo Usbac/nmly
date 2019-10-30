@@ -132,4 +132,4 @@ void doSwitch(char *new, const char *sep, char *part_one, char *part_two);
  */
 void switchSides(char **src, const char *dir, const char *filename, const char sep);
 
-#endif // HELPER_H_
+#endif /* HELPER_H_ */

@@ -97,10 +97,10 @@ void after(char **src, const char *dir, const char *filename, const char *text)
 	snprintf(*src, strlen(dir) + 2, "%s/", dir);
 	int len = strlen(*src);
 
-	//Without extension
+	/* Without extension */
 	if (name == NULL) {
 		snprintf(*src + len, strlen(filename) + strlen(text) + 1, "%s%s", filename, text);
-	//With extension
+	/* With extension */
 	} else {
 		char *ext = strAfter(filename, '.');
 		snprintf(*src + len, strlen(name) + strlen(text) + strlen(ext) + 2, "%s%s.%s", name, text, ext);
@@ -116,11 +116,11 @@ void reverse(char **src, const char *dir, char *filename)
 
 	char *name = strBefore(filename, '.');
 
-	//Without extension
+	/* Without extension */
 	if (name == NULL) {
 		strrev(filename);
 		snprintf(*src + len, strlen(filename) + 1, "%s", filename);
-	//With extension
+	/* With extension */
 	} else {
 		char *ext = strAfter(filename, '.');
 		strrev(name);
@@ -152,12 +152,12 @@ void changeCases(char **src, const char *dir, const char *filename, const int up
 
 	snprintf(*src, strlen(dir) + 2, "%s/", dir);
 
-	//Without extension
+	/* Without extension */
 	if (name == NULL) {
 		cases = malloc(strlen(filename) + 1 * sizeof(char));
 		strCases(cases, filename, upper);
 		snprintf(*src + strlen(*src), strlen(cases) + 1, "%s", cases);
-	//With extension
+	/* With extension */
 	} else {
 		cases = malloc(strlen(name) + 1 * sizeof(char));
 		strCases(cases, name, upper);
@@ -227,7 +227,7 @@ int strReplace(char **src, const char *str, const char *ori, const char *rep)
 
 void doSwitch(char *new, const char *sep, char *part_one, char *part_two)
 {
-	//Leave whitespace betweeen separator
+	/* Leave whitespace betweeen separator */
 	if (part_one[strlen(part_one) - 1] == ' ' && part_two[0] == ' ') {
 		trim(part_two);
 		trim(part_one);
@@ -251,12 +251,12 @@ void switchSides(char **src, const char *dir, const char *filename, const char s
 
 	snprintf(*src, strlen(dir) + 2, "%s/", dir);
 	
-	//Without extension
+	/* Without extension */
 	if (name == NULL) {
 		char *part_one = strBefore(filename, sep);
 		char *part_two = strAfter(filename, sep);
 
-		//If no separator is found or if it's a dot
+		/* If no separator is found or if it's a dot */
 		if (part_one == NULL || sep == '.') {
 			free(part_two);
 			*src = NULL;
@@ -270,12 +270,12 @@ void switchSides(char **src, const char *dir, const char *filename, const char s
 		return;
 	}
 
-	//With extension
+	/* With extension */
 	char *ext = strAfter(filename, '.');
 	char *part_one = strBefore(name, sep);
 	char *part_two = strAfter(name, sep);
 
-	//If no separator is found or if it's a dot
+	/* If no separator is found or if it's a dot */
 	if (part_one == NULL || sep == '.') {
 		free(ext);
 		free(name);

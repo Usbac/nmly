@@ -144,4 +144,4 @@ void parseSizeArgs(char *str);
  */
 int mapArgs(int argc, char *argv[]);
 
-#endif // NMLY_H_
+#endif /* NMLY_H_ */

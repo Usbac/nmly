@@ -17,7 +17,7 @@ int split_view = 0;
 int preview = 0, preview_unmodifiable = 0;
 int recursive = 0;
 int modify_folders = 0;
-long size_filter = -1;
+unsigned long size_filter = 0;
 enum SIZE_TYPE {
 	LT,
 	GT,
@@ -116,7 +116,7 @@ void listDir(char *basedir, char *argv[])
 	}
 
 	while ((ent = readdir(dir)) != NULL) {
-		//Avoid current and previous folders
+		/* Avoid current and previous folders */
 		if(!strcmp(ent->d_name, ".") || !strcmp(ent->d_name, "..")) {
 			continue;
 		}
@@ -193,14 +193,14 @@ int matchesFilters(char *entpath)
 	int matches = 1;
 	char *file = strAfter(entpath, '/');
 
-	//Matches filter by extension
+	/* Matches filter by extension */
 	char *ext = strAfter(file, '.');
 	if (filter[0] != '\0' && (ext == NULL || strcmp(ext, filter))) {
 		matches = 0;
 	}
 
-	//Matches filter by file size
-	if (size_filter != -1 && !sizeFilter(entpath)) {
+	/* Matches filter by file size */
+	if (size_filter != 0 && !sizeFilter(entpath)) {
 		matches = 0;
 	}
 
@@ -247,52 +247,51 @@ void parseSizeArgs(char *str) {
 
 int mapArgs(int argc, char *argv[]) 
 {
-	size_t i;
-	
-	//Show the help by default
+	int i;
+	/* Show the help by default */
 	if (argc == 1) {
 		printf(HELP_MSG);
 		return 1;
 	}
 
 	for (i = 0; i < argc; i++) {
-		//Recursive
+		/* Recursive */
 		if (!strcmp(argv[i], "-r") || !strcmp(argv[i], "--recursive")) {
 			recursive = 1;
 		}
 
-		//Preview
+		/* Preview */
 		if (!strcmp(argv[i], "-p") || !strcmp(argv[i], "--preview")) {
 			preview = 1;
 		}
 		
-		//Modify folders
+		/* Modify folders */
 		if (!strcmp(argv[i], "-f") || !strcmp(argv[i], "--folders")) {
 			modify_folders = 1;
 		}
 
-		//Locale (special characters)
+		/* Locale (special characters) */
 		if (!strcmp(argv[i], "-l") || !strcmp(argv[i], "--locale")) {
 			setlocale(LC_ALL, EMPTY);
 		}
 
-		//Split view
+		/* Split view */
 		if (!strcmp(argv[i], "--split")) {
 			split_view = 1;
 		}
 
-		//List unmodifiable files
+		/* List unmodifiable files */
 		if (!strcmp(argv[i], "-u") || !strcmp(argv[i], "--unmodifiable")) {
 			preview_unmodifiable = 1;
 		}
 
-		//Help
+		/* Help */
 		if (!strcmp(argv[i], "-h") || !strcmp(argv[i], "--help")) {
 			printf(HELP_MSG);
 			return 1;
 		}
 
-		//Version
+		/* Version */
 		if (!strcmp(argv[i], "-v") || !strcmp(argv[i], "--version")) {
 			printf("%s", VERSION_MSG);
 			return 1;
@@ -302,23 +301,23 @@ int mapArgs(int argc, char *argv[])
 			return 0;
 		}
 
-		//Working path
+		/* Working path */
 		if (!strcmp(argv[i], "-d") || !strcmp(argv[i], "--directory")) {
 			working_path = argv[++i];
 		}
 
-		//Extension filter
+		/* Extension filter */
     		if (!strcmp(argv[i], "-e") || !strcmp(argv[i], "--extension")) {
 			filter = argv[++i];
 		}
 
-		//Size
+		/* Size */
 		if (!strcmp(argv[i], "-s") || !strcmp(argv[i], "--size")) {
 			parseSizeArgs(argv[++i]);
 		}
 	}
 
-	//Options
+	/* Options */
 	if (!strcmp(argv[1], "before")) {
 		option = BEFORE;
 	} else if (!strcmp(argv[1], "after")) {
@@ -352,7 +351,7 @@ int main(int argc, char *argv[])
 
 	float start_time = (float) clock() / CLOCKS_PER_SEC;
 
-	//Confirmation
+	/* Confirmation */
 	if (!preview && !preview_unmodifiable) {
 		char confirm;
 
@@ -368,7 +367,7 @@ int main(int argc, char *argv[])
 
 	float total_time = ((float) clock() / CLOCKS_PER_SEC) - start_time;
 
-	//Messages
+	/* Messages */
 	if (!preview_unmodifiable) {
 		const char *msg = (preview) ? PREVIEW_MSG : SUCCESS_MSG;
 		printf(msg, files_n, folders_n);

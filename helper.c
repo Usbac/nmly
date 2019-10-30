@@ -28,7 +28,7 @@ void trim(char *str)
 char *strrev(char *str)
 {
 	size_t i, j;
-	char ch;
+	char tmp;
 
 	if (!str || !*str) {
 		return str;
@@ -38,11 +38,9 @@ char *strrev(char *str)
 	j = 0;
 
 	while (i > j) {
-		ch = str[i];
-		str[i] = str[j];
-		str[j] = ch;
-		i--;
-		j++;
+		tmp = str[i];
+		str[i--] = str[j];
+		str[j++] = tmp;
 	}
 
 	return str;
@@ -263,22 +261,21 @@ int strReplace(char **src, const char *str, const char *ori, const char *rep)
 
 void doSwitch(char *new, const char *sep, char *part_one, char *part_two)
 {
-	int len;
+	int len = strlen(part_two) + strlen(sep) + strlen(part_one) + 1;
+	char *format;
 
 	/* Leave whitespace betweeen separator */
 	if (part_one[strlen(part_one) - 1] == ' ' && part_two[0] == ' ') {
-		trim(part_two);
-		trim(part_one);
-		len = strlen(part_two) + strlen(sep) + 3;
-		snprintf(new + strlen(new), len, "%s %s ", part_two, sep);
+		len += 2;
+		format = "%s %s %s";
 	} else {
-		trim(part_two);
-		trim(part_one);
-		len = strlen(part_two) + strlen(sep) + 1;
-		snprintf(new + strlen(new), len, "%s%s", part_two, sep);
+		format = "%s%s%s";
 	}
 
-	snprintf(new + strlen(new), strlen(part_one) + 1, "%s", part_one);
+	trim(part_two);
+	trim(part_one);
+
+	snprintf(new, len, format, part_two, sep, part_one);
 }
 
 
@@ -288,6 +285,7 @@ void switchSides(char **src, const char *file, const char sep)
 	char *dir = strBefore(file, '/');
 	char *filename = strAfter(file, '/');
 	char *name = strBefore(filename, '.');
+	char *switched = malloc(strlen(filename) * sizeof(char));
 	char tmp[2];
 	tmp[0] = sep;
 	tmp[1] = '\0';
@@ -300,41 +298,27 @@ void switchSides(char **src, const char *file, const char sep)
 		part_two = strAfter(filename, sep);
 
 		/* If no separator is found or if it's a dot */
-		if (part_one == NULL || sep == '.') {
-			free(part_two);
-			free(filename);
-			free(dir);
+		if (part_one != NULL && sep != '.') {
+			doSwitch(switched, tmp, part_one, part_two);
+			snprintf(*src + strlen(*src), strlen(switched) + 1, "%s", switched);
+		} else {
 			*src = NULL;
-			return;
 		}
-
-		doSwitch(*src, tmp, part_one, part_two);
-		
-		free(part_one);
-		free(part_two);
-		free(filename);
-		free(dir);
-		return;
-	}
-
 	/* With extension */
-	ext = strAfter(filename, '.');
-	part_one = strBefore(name, sep);
-	part_two = strAfter(name, sep);
+	} else {
+		ext = strAfter(filename, '.');
+		part_one = strBefore(name, sep);
+		part_two = strAfter(name, sep);
 
-	/* If no separator is found or if it's a dot */
-	if (part_one == NULL || sep == '.') {
-		free(ext);
-		free(name);
-		free(part_two);
-		free(filename);
-		free(dir);
-		*src = NULL;
-		return;
+		/* If no separator is found or if it's a dot */
+		if (part_one != NULL && sep != '.') {
+			doSwitch(switched, tmp, part_one, part_two);
+			snprintf(*src + strlen(*src), strlen(switched) + 1, "%s", switched);
+			snprintf(*src + strlen(*src), strlen(ext) + 2, ".%s", ext);
+		} else {
+			*src = NULL;
+		}
 	}
-	
-	doSwitch(*src, tmp, part_one, part_two);
-	snprintf(*src + strlen(*src), strlen(ext) + 2, ".%s", ext);
 	
 	free(ext);
 	free(name);
@@ -342,4 +326,5 @@ void switchSides(char **src, const char *file, const char sep)
 	free(part_two);
 	free(filename);
 	free(dir);
+	free(switched);
 }

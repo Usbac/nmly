@@ -14,7 +14,7 @@
 #define SPLIT_COMPARE_MSG "%s\n%s\n\n"
 #define TIME_MSG "\n%f Segs\n"
 #define ARG_ERROR_MSG "Error: Invalid command\n"
-#define VERSION_MSG "Nmly v0.9.10\n"
+#define VERSION_MSG "Nmly v0.9.11\n"
 #define HELP_USAGE_MSG "USAGE \n\n" \
 		"$ nmly [Arg] [options...]\n\n" \
 		"ARGUMENTS\n\n" \

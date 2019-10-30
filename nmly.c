@@ -103,6 +103,8 @@ void listDir(char *basedir, char *argv[])
 {
 	DIR *dir;
 	struct dirent *ent;
+	int length;
+	char *entpath;
 
 	if ((dir = opendir(basedir)) == NULL) {
 		if (preview_unmodifiable) {
@@ -121,8 +123,8 @@ void listDir(char *basedir, char *argv[])
 			continue;
 		}
 
-		int length = (strlen(basedir) + strlen(ent->d_name) + 2) * sizeof(char);
-		char *entpath = malloc(length);
+		length = (strlen(basedir) + strlen(ent->d_name) + 2) * sizeof(char);
+		entpath = malloc(length);
 		snprintf(entpath, length, "%s/%s", basedir, ent->d_name);
 
 		if (isFile(entpath) || (isDir(entpath) && modify_folders)) {
@@ -148,6 +150,7 @@ void processFile(char *entpath, char *argv[])
 	char *dir = strBefore(entpath, '/');
 	char *file = strAfter(entpath, '/');
 	char *new_path;
+	int len;
 
 	if (!matchesFilters(entpath)) {
 		free(dir);
@@ -155,7 +158,7 @@ void processFile(char *entpath, char *argv[])
 		return;
 	}
 	
-	int len = 0;
+	len = 0;
 	switch (option) {
 		case BEFORE: case AFTER:
 			len = strlen(dir) + strlen(file) + strlen(argv[2]) + 2;
@@ -245,12 +248,20 @@ void parseSizeArgs(char *str) {
 }
 
 
+void printHelp(void)
+{
+	printf(HELP_USAGE_MSG);
+	printf(HELP_OPTIONS_MSG);
+	printf(HELP_EXAMPLES_MSG);
+}
+
+
 int mapArgs(int argc, char *argv[]) 
 {
 	int i;
 	/* Show the help by default */
 	if (argc == 1) {
-		printf(HELP_MSG);
+		printHelp();
 		return 1;
 	}
 
@@ -287,13 +298,13 @@ int mapArgs(int argc, char *argv[])
 
 		/* Help */
 		if (!strcmp(argv[i], "-h") || !strcmp(argv[i], "--help")) {
-			printf(HELP_MSG);
+			printHelp();
 			return 1;
 		}
 
 		/* Version */
 		if (!strcmp(argv[i], "-v") || !strcmp(argv[i], "--version")) {
-			printf("%s", VERSION_MSG);
+			printf(VERSION_MSG);
 			return 1;
 		}
 
@@ -345,11 +356,14 @@ int mapArgs(int argc, char *argv[])
 
 int main(int argc, char *argv[]) 
 {
+	float start_time, end_time;
+	char *msg;
+
 	if (mapArgs(argc, argv)) {
 		return 0;
 	}
 
-	float start_time = (float) clock() / CLOCKS_PER_SEC;
+	start_time = (float) clock() / CLOCKS_PER_SEC;
 
 	/* Confirmation */
 	if (!preview && !preview_unmodifiable) {
@@ -365,11 +379,11 @@ int main(int argc, char *argv[])
 
 	listDir(working_path, argv);
 
-	float total_time = ((float) clock() / CLOCKS_PER_SEC) - start_time;
+	end_time = ((float) clock() / CLOCKS_PER_SEC);
 
 	/* Messages */
 	if (!preview_unmodifiable) {
-		const char *msg = (preview) ? PREVIEW_MSG : SUCCESS_MSG;
+		msg = (preview) ? PREVIEW_MSG : SUCCESS_MSG;
 		printf(msg, files_n, folders_n);
 	}
 
@@ -377,7 +391,7 @@ int main(int argc, char *argv[])
 		printf(FILES_ERROR_MSG, files_error_n);
 	}
 
-	printf(TIME_MSG, total_time);
+	printf(TIME_MSG, end_time - start_time);
 
 	return 0;
 }

@@ -14,8 +14,8 @@
 #define SPLIT_COMPARE_MSG "%s\n%s\n\n"
 #define TIME_MSG "\n%f Segs\n"
 #define ARG_ERROR_MSG "Error: Invalid command\n"
-#define VERSION_MSG "Nmly v0.9.8\n"
-#define HELP_MSG "USAGE \n\n" \
+#define VERSION_MSG "Nmly v0.9.10\n"
+#define HELP_USAGE_MSG "USAGE \n\n" \
 		"$ nmly [Arg] [options...]\n\n" \
 		"ARGUMENTS\n\n" \
 		"after [text]         Add text at the end of the filenames\n" \
@@ -25,39 +25,37 @@
 		"replace [ori] [new]  Replace a text with a new one\n" \
 		"reverse              Reverse the filename\n" \
 		"switch [sep]         Switch the filename order based in a separator\n" \
-		"upper                All filename characters to uppercase\n\n" \
-		"OPTIONS\n\n" \
-		"-d --directory [text]  The directory where the changes will be applied\n" \
-		"-e --extension [text]  Apply changes only to the files with that extension\n" \
-		"-f --folders           Apply changes to the folders name too\n" \
-		"-h --help              Get help and information about the application\n" \
-		"-l --locale            Accept special characters (like latin characters)\n" \
-		"-p --preview           Show the changes without applying them\n" \
-		"-r --recursive         Apply the changes recursively in the directory\n" \
-		"-s --size [size]       Apply changes only to the files with specified filesize (+/-)(g/m/k)\n" \
-        "   --split             Display the changes horizontally split\n" \
-		"-u --unmodifiable      Show the files that cannot be modified\n" \
-		"-v --version           Show the application version\n\n" \
-		"EXAMPLES\n\n" \
-		"$ nmly switch - -d ./\n" \
-		"Author - Song.mp3 > Song - Author.mp3\n\n" \
-		"$ nmly remove ' 2017' -d ./vacations -e mp4\n" \
-		"./vacations/video 2017.mp4 > ./vacations/video.mp4\n\n" \
-		"$ nmly -d ./folder -s +1g\n" \
-		"./folder/fileBiggerThan1GB.iso\n\n" \
-		"$ nmly replace jpeg jpg -d ./\n" \
-		"picture.jpeg > picture.jpg\n\n" \
-		"$ nmly after world -d ./ -r\n" \
-		"hello.pdf > helloworld.pdf\n" \
-		"subfolder/file.txt > subfolder/fileworld.txt\n\n" \
-        "$ nmly upper -d ./ -r --split\n" \
-        "hello.pdf\n" \
-        "HELLO.pdf\n\n" \
-        "subfolder/file.txt\n" \
-        "subfolder/FILE.txt\n\n" \
-		"$ nmly -u -d ./folder -r\n" \
-		"./folder/filewithpermissions.txt\n"
-        
+		"upper                All filename characters to uppercase"
+#define HELP_OPTIONS_MSG "\n\nOPTIONS\n\n" \
+		"-d --directory [txt]  The target directory\n" \
+		"-e --extension [txt]  Filter files based on theirs extension\n" \
+		"-f --folders          Apply changes to the folders name too\n" \
+		"-h --help             Get help and information\n" \
+		"-l --locale           Process special characters (like latin ones)\n" \
+		"-p --preview          Show the changes without applying them\n" \
+		"-r --recursive        Work recursively\n" \
+		"-s --size [size]      Filter files based on theirs size (+/-)(g/m/k)\n" \
+		"   --split            Display the changes horizontally split\n" \
+		"-u --unmodifiable     Show non-modifiable files\n" \
+		"-v --version          Show the application version"
+#define HELP_EXAMPLES_MSG "\n\nEXAMPLES\n\n" \
+		"$ nmly switch -\n" \
+		"  Author - Song.mp3 > Song - Author.mp3\n" \
+		"$ nmly remove ' 2017' -d vacations -e mp4\n" \
+		"  vacations/video 2017.mp4 > vacations/video.mp4\n" \
+		"$ nmly reverse -s +1g\n" \
+		"  folder/fileBiggerThan1GB.iso > folder/BG1nahTreggiBelif.iso\n" \
+		"$ nmly replace jpeg jpg\n" \
+		"  picture.jpeg > picture.jpg\n" \
+		"$ nmly after world -r\n" \
+		"  hello.pdf > helloworld.pdf\n" \
+		"  subdir/file.txt > subdir/fileworld.txt\n" \
+		"$ nmly upper -d ./ -r --split\n" \
+		"  hello.pdf\n" \
+		"  HELLO.pdf\n" \
+		"$ nmly -u -d folder -r\n" \
+		"  folder/filewithpermissions.txt\n"
+
 #define BEFORE 0
 #define AFTER 1
 #define REPLACE 2
@@ -134,6 +132,11 @@ int matchesFilters(char *entpath);
  * @param str the file size.
  */
 void parseSizeArgs(char *str);
+
+/**
+ * Display the help messages.
+ */
+void printHelp(void);
 
 /**
  * Map all the arguments.

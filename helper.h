@@ -3,6 +3,13 @@
 #define BUFFER 512
 
 /**
+ * Reference to the snprintf function of the stdio library.
+ * Because you know, some compilers are not compliant with
+ * the C standard.
+ */
+int snprintf(char *buf, size_t size, const char *fmt, ...);
+
+/**
  * Copy a portion of the specified string into a new one.
  * @param sub the array where the substring will be stored.
  * @param str the original string.
@@ -15,7 +22,7 @@ void substr(char *sub, const char *str, const int start, const int len);
  * Remove extra whitespaces at the beginning and end of a string.
  * @param str the string.
  */
-void *trim(char *str);
+void trim(char *str);
 
 /**
  * Returns the string reversed.

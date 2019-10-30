@@ -34,41 +34,42 @@ char *strrev(char *str);
 /**
  * Returns a substring from the beginning to the last specified character.
  * @param str the original string.
- * @param character the specified character.
+ * @param ch the specified character.
  * @return a substring from the beginning to the last specified character.
  */
-char *strBefore(const char *str, const char character);
+char *strBefore(const char *str, const char ch);
 
 /**
  * Returns a substring from the last specified character to the end of the given string.
  * @param str the original string.
- * @param character the specified character.
+ * @param ch the specified character.
  * @return a substring from the last specified character to the end of the given string.
  */
-char *strAfter(const char *str, const char character);
+char *strAfter(const char *str, const char ch);
 
 /**
- * Stores in the source string the filename with the specified text appended at the beginning.
+ * Stores in the source string the filename with the specified 
+ * text appended at the beginning.
  * @param src the source string.
- * @param str the file directory.
- * @param filename the filename.
+ * @param file the file path.
+ * @param text the text to append.
  */
-void before(char **src, const char *dir, const char *filename, const char *text);
+void before(char **src, const char *file, const char *text);
 
 /**
  * Stores in the source string the filename with the specified text appended at the end.
- * @param dir the file directory.
- * @param filename the filename.
+ * @param src the source string.
+ * @param file the file path.
+ * @param text the text to append.
  */
-void after(char **src, const char *dir, const char *filename, const char *text);
+void after(char **src, const char *file, const char *text);
 
 /**
  * Stores in the source string the filename with the text reversed.
  * @param src the source string.
- * @param dir the file directory.
- * @param filename the filename.
+ * @param file the file path.
  */
-void reverse(char **src, const char *dir, char *filename);
+void reverse(char **src, const char *file);
 
 /**
  * Change a string to lowercase or uppercase.
@@ -81,41 +82,40 @@ void strCases(char *dest, const char *str, const int upper);
 /**
  * Stores in the source string the filename with all in lowercase or uppercase.
  * @param src the source string.
- * @param dir the file directory.
- * @param filename the filename.
+ * @param filename the file path.
  * @param upper 1 for uppercase, any other int for lowercase.
  */
-void changeCases(char **src, const char *dir, const char *filename, const int upper);
+void changeCases(char **src, const char *file, const int upper);
 
 /**
  * Stores in the source string the filename with the text in uppercase.
  * @param src the source string.
- * @param dir the file directory.
- * @param filename the filename.
+ * @param dir the file path.
  */
-void upper(char **src, const char *dir, const char *filename);
+void upper(char **src, const char *file);
 
 /**
  * Stores in the source string the filename with the text in lowercase.
  * @param src the source string.
- * @param dir the file directory.
- * @param filename the filename.
+ * @param dir the file path.
  */
-void lower(char **src, const char *dir, const char *filename);
+void lower(char **src, const char *file);
 
 /**
- * Stores in the source string the filename with the specified text replaced by a new one.
+ * Stores in the source string the filename with the specified 
+ * text replaced by a new one.
  * @param src the source string.
- * @param dir the file directory.
- * @param filename the filename.
+ * @param file the file path.
  * @param ori the text to replace.
  * @param rep the new text.
  */
-void replace(char **src, const char *dir, const char *filename, const char *ori, const char *rep);
+void replace(char **src, const char *file, const char *ori, const char *rep);
 
 /**
- * Stores in the source string a new string with the specified text replaced by a new one.
- * @param str the string.
+ * Stores in the source string a new string with the specified 
+ * text replaced by a new one.
+ * @param src the source string.
+ * @param str the original string.
  * @param ori the text to replace.
  * @param rep the new text.
  */
@@ -133,10 +133,9 @@ void doSwitch(char *new, const char *sep, char *part_one, char *part_two);
 /**
  * Stores in the source string a switched filename based in a separator.
  * @param src the source string.
- * @param dir the file directory.
- * @param filename the filename.
+ * @param file the file path.
  * @param sep the separator.
  */
-void switchSides(char **src, const char *dir, const char *filename, const char sep);
+void switchSides(char **src, const char *file, const char sep);
 
 #endif /* HELPER_H_ */

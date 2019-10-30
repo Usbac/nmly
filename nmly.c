@@ -77,24 +77,24 @@ int sizeFilter(char *path) {
 }
 
 
-void getChanges(char **new_path, char *dir, char *filename, char *argv[]) 
+void getChanges(char **new_path, char *file, char *argv[]) 
 {
 	switch (option) {
-		case BEFORE: before(&*new_path, dir, filename, argv[2]);
+		case BEFORE: before(&*new_path, file, argv[2]);
 			break;
-		case AFTER: after(&*new_path, dir, filename, argv[2]);
+		case AFTER: after(&*new_path, file, argv[2]);
 			break;
-		case UPPER: upper(&*new_path, dir, filename);
+		case UPPER: upper(&*new_path, file);
 			break;
-		case LOWER: lower(&*new_path, dir, filename);
+		case LOWER: lower(&*new_path, file);
 			break;
-		case SWITCH: switchSides(&*new_path, dir, filename, argv[2][0]);
+		case SWITCH: switchSides(&*new_path, file, argv[2][0]);
 			break;
-		case REVERSE: reverse(&*new_path, dir, filename);
+		case REVERSE: reverse(&*new_path, file);
 			break;
-		case REPLACE: replace(&*new_path, dir, filename, argv[2], argv[3]);
+		case REPLACE: replace(&*new_path, file, argv[2], argv[3]);
 			break;
-		case REMOVE: replace(&*new_path, dir, filename, argv[2], EMPTY);
+		case REMOVE: replace(&*new_path, file, argv[2], EMPTY);
 	}
 }
 
@@ -147,31 +147,27 @@ void listDir(char *basedir, char *argv[])
 
 void processFile(char *entpath, char *argv[])
 {
-	char *dir = strBefore(entpath, '/');
-	char *file = strAfter(entpath, '/');
 	char *new_path;
 	int len;
 
 	if (!matchesFilters(entpath)) {
-		free(dir);
-		free(file);
 		return;
 	}
 	
 	len = 0;
 	switch (option) {
 		case BEFORE: case AFTER:
-			len = strlen(dir) + strlen(file) + strlen(argv[2]) + 2;
+			len = strlen(entpath) + strlen(argv[2]) + 2;
 			break;
 		case UPPER: case LOWER: case SWITCH: case REVERSE:
-			len = strlen(dir) + strlen(file) + 2;
+			len = strlen(entpath) + 2;
 			break;
 		case REPLACE: case REMOVE:
 			len = BUFFER;
 	}
 
 	new_path = malloc(len * sizeof(char));
-	getChanges(&new_path, dir, file, argv);
+	getChanges(&new_path, entpath, argv);
 
 	if (new_path != NULL) {
 		files_n++;
@@ -186,8 +182,7 @@ void processFile(char *entpath, char *argv[])
 	}
 
 	free(new_path);
-	free(dir);
-	free(file);
+	free(entpath);
 }
 
 

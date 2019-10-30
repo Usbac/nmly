@@ -43,14 +43,14 @@
 		"  Author - Song.mp3 > Song - Author.mp3\n" \
 		"$ nmly remove ' 2017' -d vacations -e mp4\n" \
 		"  vacations/video 2017.mp4 > vacations/video.mp4\n" \
-		"$ nmly reverse -s +1g\n" \
+		"$ nmly reverse -d folder -s +1g\n" \
 		"  folder/fileBiggerThan1GB.iso > folder/BG1nahTreggiBelif.iso\n" \
 		"$ nmly replace jpeg jpg\n" \
 		"  picture.jpeg > picture.jpg\n" \
 		"$ nmly after world -r\n" \
 		"  hello.pdf > helloworld.pdf\n" \
 		"  subdir/file.txt > subdir/fileworld.txt\n" \
-		"$ nmly upper -d ./ -r --split\n" \
+		"$ nmly upper -r --split\n" \
 		"  hello.pdf\n" \
 		"  HELLO.pdf\n" \
 		"$ nmly -u -d folder -r\n" \
@@ -101,10 +101,10 @@ int sizeFilter(char *path);
  * Stores in the specified path with the changes applied 
  * in the given directory.
  * @param new_path the new path.
- * @param path the path.
+ * @param file the file path.
  * @param argv the arguments array.
  */
-void getChanges(char **new_path, char *dir, char *filename, char *argv[]);
+void getChanges(char **new_path, char *file, char *argv[]);
 
 /**
  * Apply or preview the changes over the specified directory.

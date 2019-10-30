@@ -30,53 +30,53 @@ And yes, it's obviously extremely fast. ;)
 
 ## Options
 
-`-d` `--directory [text]` The directory where the changes will be applied
+`-d` `--directory [text]` The target directory
 
-`-e` `--extension [text]` Apply the changes only to the files with that extension 
+`-e` `--extension [text]` Filter files based on theirs extension
 
 `-f` `--folders` Apply the changes to the folders name too
 
-`-h` `--help` Get help and information about the application
+`-h` `--help` Get help and information
 
-`-l` `--locale` Accept special characters (like latin characters)
+`-l` `--locale` Process special characters (like latin ones)
 
 `-p` `--preview` Show the changes without applying them
 
-`-r` `--recursive` Apply the changes recursively in the directory
+`-r` `--recursive` Work recursively
 
-`-s` `--size [size]` Apply changes only to the files with specified filesize (+/-)(g/m/k)
+`-s` `--size [size]` Filter files based on theirs size (+/-)(g/m/k)
 
 `--split` Display the changes horizontally split
 
-`-u` `--unmodifiable` Show the files that cannot be modified
+`-u` `--unmodifiable` Show non-modifiable files
 
 `-v` `--version` Show the application version
 
 ## Examples
 
 ```console
-usbac@pc:~$ nmly switch - -d ./
+usbac@pc:~$ nmly switch -
 Author - Song.mp3 > Song - Author.mp3
 ```
 ```console
-usbac@pc:~$ nmly remove " 2017" -d ./vacations -e mp4
-./vacations/video 2017.mp4 > ./vacations/video.mp4
+usbac@pc:~$ nmly remove " 2017" -d vacations -e mp4
+vacations/video 2017.mp4 > vacations/video.mp4
 ```
 ```console
-usbac@pc:~$ nmly -d ./folder -s +1g
-./folder/fileBiggerThan1GB.iso
+usbac@pc:~$ nmly reverse -d folder -s +1g
+folder/fileBiggerThan1GB.iso > folder/BG1nahTreggiBelif.iso
 ```
 ```console
-usbac@pc:~$ nmly replace jpeg jpg -d ./
+usbac@pc:~$ nmly replace jpeg jpg
 picture.jpeg > picture.jpg
 ```
 ```console
-usbac@pc:~$ nmly after world -d ./ -r
+usbac@pc:~$ nmly after world -r
 hello.pdf > helloworld.pdf
 subfolder/file.txt > subfolder/fileworld.txt 
 ```
 ```console
-usbac@pc:~$ nmly upper -d ./ -r --split
+usbac@pc:~$ nmly upper -r --split
 hello.pdf
 HELLO.pdf
 
@@ -84,6 +84,6 @@ subfolder/file.txt
 subfolder/FILE.txt 
 ```
 ```console
-usbac@pc:~$ nmly -u -d ./folder -r
-./folder/filewithpermissions.txt
+usbac@pc:~$ nmly -u -d folder -r
+folder/filewithpermissions.txt
 ```

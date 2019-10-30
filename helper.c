@@ -13,14 +13,14 @@ void substr(char *sub, const char *str, const int start, const int len)
 
 void trim(char *str) 
 {
-	size_t length = strlen(str) - 1;
+	size_t len = strlen(str) - 1;
 
 	if (str[0] == ' ') {
 		memmove(str, str + 1, strlen(str));
 	}
 
-	if (str[length] == ' ') {
-		str[length] = '\0';
+	if (str[len] == ' ') {
+		str[len] = '\0';
 	}
 }
 
@@ -49,9 +49,9 @@ char *strrev(char *str)
 }
 
 
-char *strBefore(const char *str, const char character) 
+char *strBefore(const char *str, const char ch) 
 {
-	char *pos = strrchr(str, character);
+	char *pos = strrchr(str, ch);
 	char *part;
 	size_t size;
 	
@@ -71,9 +71,9 @@ char *strBefore(const char *str, const char character)
 }
 
 
-char *strAfter(const char *str, const char character) 
+char *strAfter(const char *str, const char ch) 
 {
-	char *pos = strrchr(str, character);
+	char *pos = strrchr(str, ch);
 	char *part;
 	size_t size;
 	
@@ -89,14 +89,20 @@ char *strAfter(const char *str, const char character)
 }
 
 
-void before(char **src, const char *dir, const char *filename, const char *text)
+void before(char **src, const char *file, const char *text)
 {
-	snprintf(*src, strlen(dir) + strlen(filename) + strlen(text) + 2, "%s/%s%s", dir, text, filename);
+	char *dir = strBefore(file, '/');
+	char *filename = strAfter(file, '/');
+	snprintf(*src, strlen(file) + strlen(text) + 2, "%s/%s%s", dir, text, filename);
+	free(dir);
+	free(filename);
 }
 
 
-void after(char **src, const char *dir, const char *filename, const char *text)
+void after(char **src, const char *file, const char *text)
 {
+	char *dir = strBefore(file, '/');
+	char *filename = strAfter(file, '/');
 	char *name = strBefore(filename, '.');
 	char *ext;
 	int len;
@@ -110,14 +116,21 @@ void after(char **src, const char *dir, const char *filename, const char *text)
 	/* With extension */
 	} else {
 		ext = strAfter(filename, '.');
-		snprintf(*src + len, strlen(name) + strlen(text) + strlen(ext) + 2, "%s%s.%s", name, text, ext);
+		snprintf(*src + len, strlen(name) + strlen(text) + strlen(ext) + 2, 
+			"%s%s.%s", name, text, ext);
 		free(ext);
 	}
+
+	free(name);
+	free(filename);
+	free(dir);
 }
 
 
-void reverse(char **src, const char *dir, char *filename)
+void reverse(char **src, const char *file)
 {
+	char *dir = strBefore(file, '/');
+	char *filename = strAfter(file, '/');
 	char *name, *ext;
 	int len;
 	snprintf(*src, strlen(dir) + 2, "%s/", dir);
@@ -136,15 +149,18 @@ void reverse(char **src, const char *dir, char *filename)
 		free(name);
 		free(ext);
 	}
+
+	free(filename);
+	free(dir);
 }
 
 
 void strCases(char *dest, const char *str, const int upper)
 {
-	size_t length = strlen(str);
+	size_t len = strlen(str);
 	size_t i;
 
-	for (i = 0; i < length; i++) {
+	for (i = 0; i < len; i++) {
 		dest[i] = upper ? toupper(str[i]) : tolower(str[i]);
 	}
 
@@ -152,8 +168,10 @@ void strCases(char *dest, const char *str, const int upper)
 }
 
 
-void changeCases(char **src, const char *dir, const char *filename, const int upper)
+void changeCases(char **src, const char *file, const int upper)
 {
+	char *dir = strBefore(file, '/');
+	char *filename = strAfter(file, '/');
 	char *name = strBefore(filename, '.');
 	char *ext = strAfter(filename, '.');
 	char *cases;
@@ -173,36 +191,46 @@ void changeCases(char **src, const char *dir, const char *filename, const int up
 	}
 
 	free(cases);
-	free(name);
 	free(ext);
+	free(name);
+	free(filename);
+	free(dir);
 }
 
 
-void upper(char **src, const char *dir, const char *filename)
+void upper(char **src, const char *file)
 {
-	changeCases(&*src, dir, filename, 1);
+	changeCases(&*src, file, 1);
 }
 
 
-void lower(char **src, const char *dir, const char *filename)
+void lower(char **src, const char *file)
 {
-	changeCases(&*src, dir, filename, 0);
+	changeCases(&*src, file, 0);
 }
 
 
-void replace(char **src, const char *dir, const char *filename, const char *ori, const char *rep)
+void replace(char **src, const char *file, const char *ori, const char *rep)
 {
+	char *dir = strBefore(file, '/');
+	char *filename = strAfter(file, '/');
 	char *replaced = malloc(BUFFER * sizeof(char));
+	int len;
 	
 	if (strReplace(&replaced, filename, ori, rep)) {
 		free(replaced);
+		free(filename);
+		free(dir);
 		*src = NULL;
 		return;
 	}
 
-	snprintf(*src, (strlen(dir) + strlen(replaced) + 2) * sizeof(char), "%s/%s", dir, replaced);
+	len = (strlen(dir) + strlen(replaced) + 2) * sizeof(char);
+	snprintf(*src, len, "%s/%s", dir, replaced);
 
 	free(replaced);
+	free(filename);
+	free(dir);
 }
 
 
@@ -254,9 +282,11 @@ void doSwitch(char *new, const char *sep, char *part_one, char *part_two)
 }
 
 
-void switchSides(char **src, const char *dir, const char *filename, const char sep)
+void switchSides(char **src, const char *file, const char sep)
 {
 	char *part_one, *part_two, *ext;
+	char *dir = strBefore(file, '/');
+	char *filename = strAfter(file, '/');
 	char *name = strBefore(filename, '.');
 	char tmp[2];
 	tmp[0] = sep;
@@ -272,6 +302,8 @@ void switchSides(char **src, const char *dir, const char *filename, const char s
 		/* If no separator is found or if it's a dot */
 		if (part_one == NULL || sep == '.') {
 			free(part_two);
+			free(filename);
+			free(dir);
 			*src = NULL;
 			return;
 		}
@@ -280,6 +312,8 @@ void switchSides(char **src, const char *dir, const char *filename, const char s
 		
 		free(part_one);
 		free(part_two);
+		free(filename);
+		free(dir);
 		return;
 	}
 
@@ -293,6 +327,8 @@ void switchSides(char **src, const char *dir, const char *filename, const char s
 		free(ext);
 		free(name);
 		free(part_two);
+		free(filename);
+		free(dir);
 		*src = NULL;
 		return;
 	}
@@ -304,4 +340,6 @@ void switchSides(char **src, const char *dir, const char *filename, const char s
 	free(name);
 	free(part_one);
 	free(part_two);
+	free(filename);
+	free(dir);
 }

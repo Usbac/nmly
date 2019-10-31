@@ -1,6 +1,7 @@
 #ifndef NMLY_H_
 #define NMLY_H_
 
+#define MICRO_SECS 1000000.00
 #define KBYTE 1024
 #define EMPTY ""
 #define SINGLE_MSG "%s\n"
@@ -12,9 +13,9 @@
 #define DIR_CONFIRM_MSG "Apply the changes in the following directory '%s'? [Y/n] "
 #define COMPARE_MSG "%s > %s \n"
 #define SPLIT_COMPARE_MSG "%s\n%s\n\n"
-#define TIME_MSG "\n%f Segs\n"
+#define TIME_MSG "\n%lf Segs\n"
 #define ARG_ERROR_MSG "Error: Invalid command\n"
-#define VERSION_MSG "Nmly v0.9.12\n"
+#define VERSION_MSG "Nmly v0.9.13\n"
 #define HELP_USAGE_MSG "USAGE \n\n" \
 		"$ nmly [Arg] [options...]\n\n" \
 		"ARGUMENTS\n\n" \
@@ -140,10 +141,8 @@ void printHelp(void);
 
 /**
  * Display the final messages.
- * @param float_time the total time that 
- * took to list the files.
  */
-void printFinishedMsg(float total_time);
+void printFinishedMsg(void);
 
 /**
  * Map all the arguments.

@@ -3,6 +3,7 @@
 #include <string.h>
 #include <dirent.h>
 #include <sys/stat.h>
+#include <sys/time.h>
 #include <time.h>
 #include <wchar.h>
 #include <locale.h>
@@ -18,6 +19,7 @@ int preview = 0, preview_unmodifiable = 0;
 int recursive = 0;
 int modify_folders = 0;
 unsigned long size_filter = 0;
+struct timeval start_time, end_time, elapsed_time;
 enum SIZE_TYPE {
 	LT,
 	GT,
@@ -249,7 +251,7 @@ void printHelp(void)
 }
 
 
-void printFinishedMsg(float total_time)
+void printFinishedMsg(void)
 {
 	if (!preview_unmodifiable) {
 		printf(preview ? PREVIEW_MSG : SUCCESS_MSG, files_n, folders_n);
@@ -259,7 +261,10 @@ void printFinishedMsg(float total_time)
 		printf(FILES_ERROR_MSG, files_error_n);
 	}
 
-	printf(TIME_MSG, total_time);
+	double elapsed = (end_time.tv_sec * MICRO_SECS + end_time.tv_usec) - 
+		(start_time.tv_sec * MICRO_SECS + start_time.tv_usec);
+
+	printf(TIME_MSG, elapsed / MICRO_SECS);
 }
 
 
@@ -378,8 +383,6 @@ int confirm()
 
 int main(int argc, char *argv[]) 
 {
-	float start_time, end_time;
-
 	if (mapArgs(argc, argv)) {
 		return 0;
 	}
@@ -388,11 +391,11 @@ int main(int argc, char *argv[])
 		return 0;
 	}
 
-	start_time = (float) clock() / CLOCKS_PER_SEC;
+	gettimeofday(&start_time, NULL);
 	listDir(working_path, argv);
-	end_time = ((float) clock() / CLOCKS_PER_SEC);
+ 	gettimeofday(&end_time, NULL);
 
-	printFinishedMsg(end_time - start_time);
+	printFinishedMsg();
 
 	return 0;
 }

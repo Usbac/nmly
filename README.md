@@ -1,7 +1,12 @@
-<h1 align="center">Nmly</h1>
-
+<h1 align="center">
+<br>
+<img src="http://usbac.com.ve/wp-content/uploads/2018/10/icon.png" alt="Namely logo" width="200">
+<br>
+Nmly
+<br>
+</h1>
 <p align="center">
-<img src="https://img.shields.io/badge/version-0.9.12-blue.svg"> <img src="https://img.shields.io/badge/license-MIT-orange.svg">
+<img src="https://img.shields.io/badge/version-0.9.13-blue.svg"> <img src="https://img.shields.io/badge/license-MIT-orange.svg">
 </p>
 
 <h4 align="center">Nmly is a massive file renamer utility with useful functions and written in C.</h4>

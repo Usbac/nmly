@@ -14,7 +14,7 @@
 #define SPLIT_COMPARE_MSG "%s\n%s\n\n"
 #define TIME_MSG "\n%f Segs\n"
 #define ARG_ERROR_MSG "Error: Invalid command\n"
-#define VERSION_MSG "Nmly v0.9.11\n"
+#define VERSION_MSG "Nmly v0.9.12\n"
 #define HELP_USAGE_MSG "USAGE \n\n" \
 		"$ nmly [Arg] [options...]\n\n" \
 		"ARGUMENTS\n\n" \
@@ -139,6 +139,13 @@ void parseSizeArgs(char *str);
 void printHelp(void);
 
 /**
+ * Display the final messages.
+ * @param float_time the total time that 
+ * took to list the files.
+ */
+void printFinishedMsg(float total_time);
+
+/**
  * Map all the arguments.
  * @param argc the number of arguments.
  * @param argv the arguments array.
@@ -146,5 +153,11 @@ void printHelp(void);
  * must be stopped after this function, 0 otherwise.
  */
 int mapArgs(int argc, char *argv[]);
+
+/**
+ * Returns 1 if the user confirmed the continue message, 0 otherwise.
+ * @return 1 if the user confirmed the continue message, 0 otherwise.
+ */
+int confirm(void);
 
 #endif /* NMLY_H_ */

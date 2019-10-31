@@ -11,7 +11,7 @@
 
 char *working_path = ".";
 char *filter = EMPTY;
-int files_n = 0, folders_n = 0, files_error_n = 0;
+int files_n = 0, folders_n = 1, files_error_n = 0;
 int option = 0;
 int split_view = 0;
 int preview = 0, preview_unmodifiable = 0;
@@ -22,8 +22,7 @@ enum SIZE_TYPE {
 	LT,
 	GT,
 	EQ
-};
-enum SIZE_TYPE size_type_filter;
+} size_type_filter;
 
 
 int isFile(const char* path) 
@@ -182,7 +181,6 @@ void processFile(char *entpath, char *argv[])
 	}
 
 	free(new_path);
-	free(entpath);
 }
 
 
@@ -248,6 +246,20 @@ void printHelp(void)
 	printf(HELP_USAGE_MSG);
 	printf(HELP_OPTIONS_MSG);
 	printf(HELP_EXAMPLES_MSG);
+}
+
+
+void printFinishedMsg(float total_time)
+{
+	if (!preview_unmodifiable) {
+		printf(preview ? PREVIEW_MSG : SUCCESS_MSG, files_n, folders_n);
+	}
+
+	if (files_error_n > 0 || preview_unmodifiable) {
+		printf(FILES_ERROR_MSG, files_error_n);
+	}
+
+	printf(TIME_MSG, total_time);
 }
 
 
@@ -349,44 +361,38 @@ int mapArgs(int argc, char *argv[])
 }
 
 
+int confirm()
+{
+	char confirm;
+
+	printf(DIR_CONFIRM_MSG, working_path);
+	scanf("%c", &confirm);
+
+	if (confirm != 'Y' && confirm != 'y' && confirm != '\n') {
+		return 0;
+	}
+
+	return 1;
+}
+
+
 int main(int argc, char *argv[]) 
 {
 	float start_time, end_time;
-	char *msg;
 
 	if (mapArgs(argc, argv)) {
 		return 0;
 	}
 
-	start_time = (float) clock() / CLOCKS_PER_SEC;
-
-	/* Confirmation */
-	if (!preview && !preview_unmodifiable) {
-		char confirm;
-
-		printf(DIR_CONFIRM_MSG, working_path);
-		scanf("%c", &confirm);
-
-		if (confirm != 'Y' && confirm != 'y' && confirm != '\n') {
-			return 0;
-		}
+	if (!preview && !preview_unmodifiable && !confirm()) {
+		return 0;
 	}
 
+	start_time = (float) clock() / CLOCKS_PER_SEC;
 	listDir(working_path, argv);
-
 	end_time = ((float) clock() / CLOCKS_PER_SEC);
 
-	/* Messages */
-	if (!preview_unmodifiable) {
-		msg = (preview) ? PREVIEW_MSG : SUCCESS_MSG;
-		printf(msg, files_n, folders_n);
-	}
-
-	if (files_error_n > 0 || preview_unmodifiable) {
-		printf(FILES_ERROR_MSG, files_error_n);
-	}
-
-	printf(TIME_MSG, end_time - start_time);
+	printFinishedMsg(end_time - start_time);
 
 	return 0;
 }

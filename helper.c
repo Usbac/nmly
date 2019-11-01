@@ -318,9 +318,10 @@ void switchSides(char **src, const char *file, const char sep)
 		} else {
 			*src = NULL;
 		}
+
+		free(ext);
 	}
 	
-	free(ext);
 	free(name);
 	free(part_one);
 	free(part_two);

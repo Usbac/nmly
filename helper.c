@@ -58,7 +58,7 @@ char *strBefore(const char *str, const char ch)
 	}
 
 	size = pos - str;
-	part = malloc(size + 1 * sizeof(char));
+	part = malloc_(size + 1 * sizeof(char));
 	substr(part, str, 0, size);
 
 	if (part[size] != '\0') {
@@ -80,7 +80,7 @@ char *strAfter(const char *str, const char ch)
 	}
 
 	size = strlen(str) - (pos - str);
-	part = malloc(size * sizeof(char));
+	part = malloc_(size * sizeof(char));
 	substr(part, str, pos - str + 1, size);
 
 	return part;
@@ -178,12 +178,12 @@ void changeCases(char **src, const char *file, const int upper)
 
 	/* Without extension */
 	if (name == NULL) {
-		cases = malloc(strlen(filename) + 1 * sizeof(char));
+		cases = malloc_(strlen(filename) + 1 * sizeof(char));
 		strCases(cases, filename, upper);
 		snprintf(*src + strlen(*src), strlen(cases) + 1, "%s", cases);
 	/* With extension */
 	} else {
-		cases = malloc(strlen(name) + 1 * sizeof(char));
+		cases = malloc_(strlen(name) + 1 * sizeof(char));
 		strCases(cases, name, upper);
 		snprintf(*src + strlen(*src), strlen(cases) + strlen(ext) + 2, "%s.%s", cases, ext);
 	}
@@ -212,7 +212,7 @@ void replace(char **src, const char *file, const char *ori, const char *rep)
 {
 	char *dir = strBefore(file, '/');
 	char *filename = strAfter(file, '/');
-	char *replaced = malloc(BUFFER * sizeof(char));
+	char *replaced = malloc_(BUFFER * sizeof(char));
 	int len;
 	
 	if (strReplace(&replaced, filename, ori, rep)) {
@@ -234,7 +234,7 @@ void replace(char **src, const char *file, const char *ori, const char *rep)
 
 int strReplace(char **src, const char *str, const char *ori, const char *rep)
 {
-	char *remaining_ref = malloc(strlen(str) + 1 * sizeof(char));
+	char *remaining_ref = malloc_(strlen(str) + 1 * sizeof(char));
 	char *remaining = remaining_ref;
 	char *pos;
 	*src[0] = '\0';
@@ -285,7 +285,7 @@ void switchSides(char **src, const char *file, const char sep)
 	char *dir = strBefore(file, '/');
 	char *filename = strAfter(file, '/');
 	char *name = strBefore(filename, '.');
-	char *switched = malloc(strlen(filename) * sizeof(char));
+	char *switched = malloc_(strlen(filename) * sizeof(char));
 	char tmp[2];
 	tmp[0] = sep;
 	tmp[1] = '\0';

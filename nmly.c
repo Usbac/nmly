@@ -125,7 +125,7 @@ void listDir(char *basedir, char *argv[])
 		}
 
 		length = (strlen(basedir) + strlen(ent->d_name) + 2) * sizeof(char);
-		entpath = malloc(length);
+		entpath = malloc_(length);
 		snprintf(entpath, length, "%s/%s", basedir, ent->d_name);
 
 		if (isFile(entpath) || (isDir(entpath) && modify_folders)) {
@@ -167,7 +167,7 @@ void processFile(char *entpath, char *argv[])
 			len = BUFFER;
 	}
 
-	new_path = malloc(len * sizeof(char));
+	new_path = malloc_(len * sizeof(char));
 	getChanges(&new_path, entpath, argv);
 
 	if (new_path != NULL) {
@@ -261,10 +261,10 @@ void printFinishedMsg(void)
 		printf(FILES_ERROR_MSG, files_error_n);
 	}
 
-	double elapsed = (end_time.tv_sec * MICRO_SECS + end_time.tv_usec) - 
-		(start_time.tv_sec * MICRO_SECS + start_time.tv_usec);
+	double elapsed = (end_time.tv_sec - start_time.tv_sec)
+		+ (end_time.tv_usec - start_time.tv_usec) / BILLION;
 
-	printf(TIME_MSG, elapsed / MICRO_SECS);
+	printf(TIME_MSG, elapsed);
 }
 
 
@@ -370,6 +370,10 @@ int confirm()
 {
 	char confirm;
 
+	if (preview || preview_unmodifiable) {
+		return 1;
+	}
+
 	printf(DIR_CONFIRM_MSG, working_path);
 	scanf("%c", &confirm);
 
@@ -383,11 +387,7 @@ int confirm()
 
 int main(int argc, char *argv[]) 
 {
-	if (mapArgs(argc, argv)) {
-		return 0;
-	}
-
-	if (!preview && !preview_unmodifiable && !confirm()) {
+	if (mapArgs(argc, argv) || !confirm()) {
 		return 0;
 	}
 

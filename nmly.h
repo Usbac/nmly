@@ -1,7 +1,7 @@
 #ifndef NMLY_H_
 #define NMLY_H_
 
-#define MICRO_SECS 1000000.00
+#define BILLION 1e9
 #define KBYTE 1024
 #define EMPTY ""
 #define SINGLE_MSG "%s\n"
@@ -15,7 +15,7 @@
 #define SPLIT_COMPARE_MSG "%s\n%s\n\n"
 #define TIME_MSG "\n%lf Segs\n"
 #define ARG_ERROR_MSG "Error: Invalid command\n"
-#define VERSION_MSG "Nmly v0.9.13\n"
+#define VERSION_MSG "Nmly v0.9.14\n"
 #define HELP_USAGE_MSG "USAGE \n\n" \
 		"$ nmly [Arg] [options...]\n\n" \
 		"ARGUMENTS\n\n" \
@@ -154,8 +154,10 @@ void printFinishedMsg(void);
 int mapArgs(int argc, char *argv[]);
 
 /**
- * Returns 1 if the user confirmed the continue message, 0 otherwise.
- * @return 1 if the user confirmed the continue message, 0 otherwise.
+ * Returns 1 if the user confirmed the continue message 
+ * or one of the preview flags are 1, 0 otherwise.
+ * @return 1 if the user confirmed the continue message 
+ * or one of the preview flags are 1, 0 otherwise.
  */
 int confirm(void);
 

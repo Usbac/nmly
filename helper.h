@@ -1,6 +1,21 @@
 #ifndef HELPER_H_
 #define HELPER_H_
 #define BUFFER 512
+#define ERROR_MEM_MSG "Could not allocate memory!"
+
+/**
+ * Just a safer malloc function.
+ */
+static void *malloc_(size_t size)
+{
+    void *alloc_mem = malloc(size);
+    if (alloc_mem == NULL) {
+        printf(ERROR_MEM_MSG);
+        exit(-1);
+    }
+
+    return alloc_mem;
+}
 
 /**
  * Reference to the snprintf function of the stdio library.

@@ -1,3 +1,6 @@
+CC=gcc
+CFLAGS=-ansi
+
 all: nmly
 
 nmly: nmly.o helper.o

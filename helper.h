@@ -5,17 +5,24 @@
 
 /**
  * Just a safer malloc function.
+ * @param size the memory to allocate.
  */
-static void *malloc_(size_t size)
-{
-    void *alloc_mem = malloc(size);
-    if (alloc_mem == NULL) {
-        printf(ERROR_MEM_MSG);
-        exit(-1);
-    }
+void *malloc_(size_t size);
 
-    return alloc_mem;
-}
+/**
+ * Just a safer strcpy function.
+ * @param src the source string.
+ * @param ori the original string.
+ */
+void strcpy_(char *src, const char *ori);
+
+/**
+ * Concatenate two paths into one.
+ * @param src the source string.
+ * @param path_one the first path.
+ * @param path_two the second path.
+ */
+void concatPath(char *src, const char *path_one, const char *path_two);
 
 /**
  * Reference to the snprintf function of the stdio library.
@@ -143,7 +150,7 @@ int strReplace(char **src, const char *str, const char *ori, const char *rep);
  * @param part_one the first part.
  * @param part_two the second part.
  */
-void doSwitch(char *new, const char *sep, char *part_one, char *part_two);
+void doSwitch(char *new, const char *sep, const char *part_one, const char *part_two);
 
 /**
  * Stores in the source string a switched filename based in a separator.

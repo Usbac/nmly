@@ -4,18 +4,17 @@
 #define BILLION 1e9
 #define KBYTE 1024
 #define EMPTY ""
-#define SINGLE_MSG "%s\n"
 #define PREVIEW_MSG "\n%i File(s) to be modified in %i folder(s)"
 #define SUCCESS_MSG "\n%i File(s) modified in %i folder(s)"
 #define FILES_ERROR_MSG "\n%i File(s) cannot be modified. Maybe check your permissions?"
 #define DIR_ERROR_MSG "Cannot open directory %s\n"
 #define SPLIT_DIR_ERROR_MSG "Cannot open directory %s\n\n"
 #define DIR_CONFIRM_MSG "Apply the changes in the following directory '%s'? [Y/n] "
-#define COMPARE_MSG "%s > %s \n"
+#define COMPARE_MSG "%s > %s\n"
 #define SPLIT_COMPARE_MSG "%s\n%s\n\n"
 #define TIME_MSG "\n%lf Segs\n"
 #define ARG_ERROR_MSG "Error: Invalid command\n"
-#define VERSION_MSG "Nmly v0.9.14\n"
+#define VERSION_MSG "Nmly v0.9.15\n"
 #define HELP_USAGE_MSG "USAGE \n\n" \
 		"$ nmly [Arg] [options...]\n\n" \
 		"ARGUMENTS\n\n" \

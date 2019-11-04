@@ -104,29 +104,24 @@ void listDir(char *basedir, char *argv[])
 {
 	DIR *dir;
 	struct dirent *ent;
-	int length;
 	char *entpath;
 
-	if ((dir = opendir(basedir)) == NULL) {
-		if (preview_unmodifiable) {
-			printf(SINGLE_MSG, basedir);
-		} else {
-			printf(split_view ? SPLIT_DIR_ERROR_MSG : DIR_ERROR_MSG, basedir);
-		}
+	if (!(dir = opendir(basedir))) {
+		printf(preview_unmodifiable ? "%s" : 
+			split_view ? SPLIT_DIR_ERROR_MSG : DIR_ERROR_MSG, basedir);
 		
 		files_error_n++;
 		return;
 	}
 
-	while ((ent = readdir(dir)) != NULL) {
+	while ((ent = readdir(dir))) {
 		/* Avoid current and previous folders */
-		if(!strcmp(ent->d_name, ".") || !strcmp(ent->d_name, "..")) {
+		if (!strcmp(ent->d_name, ".") || !strcmp(ent->d_name, "..")) {
 			continue;
 		}
 
-		length = (strlen(basedir) + strlen(ent->d_name) + 2) * sizeof(char);
-		entpath = malloc_(length);
-		snprintf(entpath, length, "%s/%s", basedir, ent->d_name);
+		entpath = malloc_((strlen(basedir) + strlen(ent->d_name) + 2) * sizeof(char));
+		concatPath(entpath, basedir, ent->d_name);
 
 		if (isFile(entpath) || (isDir(entpath) && modify_folders)) {
 			processFile(entpath, argv);
@@ -141,8 +136,6 @@ void listDir(char *basedir, char *argv[])
 	}
 
 	closedir(dir);
-
-	return;
 }
 
 
@@ -170,16 +163,19 @@ void processFile(char *entpath, char *argv[])
 	new_path = malloc_(len * sizeof(char));
 	getChanges(&new_path, entpath, argv);
 
-	if (new_path != NULL) {
-		files_n++;
+	if (!new_path) {
+		free(new_path);
+		return;
+	}
 
-		if (!preview_unmodifiable) {
-			if (!preview) {
-				rename(entpath, new_path);
-			}
-		
-			printf(split_view ? SPLIT_COMPARE_MSG : COMPARE_MSG, entpath, new_path);
+	files_n++;
+
+	if (!preview_unmodifiable) {
+		if (!preview) {
+			rename(entpath, new_path);
 		}
+
+		printf(split_view ? SPLIT_COMPARE_MSG : COMPARE_MSG, entpath, new_path);
 	}
 
 	free(new_path);
@@ -358,7 +354,7 @@ int mapArgs(int argc, char *argv[])
 	} else if (!strcmp(argv[1], "remove")) {
 		option = REMOVE;
 	} else if (!preview_unmodifiable) {
-		printf(SINGLE_MSG, ARG_ERROR_MSG);
+		printf("%s", ARG_ERROR_MSG);
 		return 1;
 	}
 

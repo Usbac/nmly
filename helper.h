@@ -24,12 +24,14 @@ void strcpy_(char *src, const char *ori);
  */
 void concatPath(char *src, const char *path_one, const char *path_two);
 
+#if defined(_WIN32) || defined(WIN32) 
 /**
  * Reference to the snprintf function of the stdio library.
  * Because you know, some compilers are not compliant with
  * the C standard.
  */
 int snprintf(char *buf, size_t size, const char *fmt, ...);
+#endif
 
 /**
  * Copy a portion of the specified string into a new one.

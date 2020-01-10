@@ -32,6 +32,7 @@
 		"-f --folders          Apply changes to the folders name too\n" \
 		"-h --help             Get help and information\n" \
 		"-l --locale           Process special characters (like latin ones)\n" \
+		"-nv --no-verbose      No verbose mode (no files will be listed)"\n \
 		"-p --preview          Show the changes without applying them\n" \
 		"-r --recursive        Work recursively\n" \
 		"-s --size [size]      Filter files based on theirs size (+/-)(g/m/k)\n" \

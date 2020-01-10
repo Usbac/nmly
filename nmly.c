@@ -16,6 +16,7 @@ int files_n = 0, folders_n = 1, files_error_n = 0;
 int option = 0;
 int split_view = 0;
 int preview = 0, preview_unmodifiable = 0;
+int verbose = 1;
 int recursive = 0;
 int modify_folders = 0;
 unsigned long size_filter = 0;
@@ -107,9 +108,11 @@ void listDir(char *basedir, char *argv[])
 	char *entpath;
 
 	if (!(dir = opendir(basedir))) {
-		printf(preview_unmodifiable ? "%s" : 
-			split_view ? SPLIT_DIR_ERROR_MSG : DIR_ERROR_MSG, basedir);
-		
+		if (verbose) {
+			printf(preview_unmodifiable ? "%s" : 
+				split_view ? SPLIT_DIR_ERROR_MSG : DIR_ERROR_MSG, basedir);
+		}
+
 		files_error_n++;
 		return;
 	}
@@ -175,7 +178,9 @@ void processFile(char *entpath, char *argv[])
 			rename(entpath, new_path);
 		}
 
-		printf(split_view ? SPLIT_COMPARE_MSG : COMPARE_MSG, entpath, new_path);
+		if (verbose) {
+			printf(split_view ? SPLIT_COMPARE_MSG : COMPARE_MSG, entpath, new_path);
+		}
 	}
 
 	free(new_path);
@@ -282,6 +287,11 @@ int mapArgs(int argc, char *argv[])
 		/* Preview */
 		if (!strcmp(argv[i], "-p") || !strcmp(argv[i], "--preview")) {
 			preview = 1;
+		}
+
+		/* No Verbose */
+		if (!strcmp(argv[i], "-nv") || !strcmp(argv[i], "--no-verbose")) {
+			verbose = 0;
 		}
 		
 		/* Modify folders */

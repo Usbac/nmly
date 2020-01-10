@@ -6,7 +6,7 @@ Nmly
 <br>
 </h1>
 <p align="center">
-<img src="https://img.shields.io/badge/version-0.9.16-blue.svg"> <img src="https://img.shields.io/badge/license-MIT-orange.svg">
+<img src="https://img.shields.io/badge/version-1.0.0-blue.svg"> <img src="https://img.shields.io/badge/license-MIT-orange.svg">
 </p>
 
 <h4 align="center">Nmly is a massive file renamer utility with useful functions and written in C.</h4>
@@ -44,6 +44,8 @@ And yes, it's obviously extremely fast. ;)
 `-h` `--help` Get help and information
 
 `-l` `--locale` Process special characters (like latin ones)
+
+`-nv` `--no-verbose` No verbose mode (no files will be listed)
 
 `-p` `--preview` Show the changes without applying them
 

@@ -39,12 +39,14 @@ void trim(char *str)
 {
 	size_t len = strlen(str) - 1;
 
-	if (str[0] == ' ') {
+	while (str[0] == ' ') {
 		memmove(str, str + 1, strlen(str));
+		len--;
 	}
 
-	if (str[len] == ' ') {
+	while (str[len] == ' ') {
 		str[len] = '\0';
+		len--;
 	}
 }
 
@@ -98,14 +100,16 @@ char *strAfter(const char *str, const char ch)
 	char *pos = strrchr(str, ch);
 	char *part;
 	size_t size;
+	size_t len;
 	
 	if (!pos) {
 		return NULL;
 	}
 
-	size = strlen(str) - (pos - str);
-	part = malloc_(size * sizeof(char));
-	substr(part, str, pos - str + 1, size);
+	size = pos - str;
+	len = strlen(str) - size;
+	part = malloc_(len * sizeof(char));
+	substr(part, str, size + 1, len);
 
 	return part;
 }

@@ -11,7 +11,7 @@
 #include "helper.h"
 
 char *working_path = ".";
-char *filter = EMPTY;
+char *filter = "";
 int files_n = 0, folders_n = 1, files_error_n = 0;
 int option = 0;
 int split_view = 0;
@@ -96,7 +96,7 @@ void getChanges(char **new_path, char *file, char *argv[])
 			break;
 		case REPLACE: replace(&*new_path, file, argv[2], argv[3]);
 			break;
-		case REMOVE: replace(&*new_path, file, argv[2], EMPTY);
+		case REMOVE: replace(&*new_path, file, argv[2], "");
 	}
 }
 
@@ -305,7 +305,7 @@ int mapArgs(int argc, char *argv[])
 
 		/* Locale (special characters) */
 		if (!strcmp(argv[i], "-l") || !strcmp(argv[i], "--locale")) {
-			setlocale(LC_ALL, EMPTY);
+			setlocale(LC_ALL, "");
 		}
 
 		/* Split view */

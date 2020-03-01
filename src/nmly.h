@@ -3,7 +3,6 @@
 
 #define BILLION 1e9
 #define KBYTE 1024
-#define EMPTY ""
 #define PREVIEW_MSG "\n%i File(s) to be modified in %i folder(s)"
 #define SUCCESS_MSG "\n%i File(s) modified in %i folder(s)"
 #define FILES_ERROR_MSG "\n%i File(s) cannot be modified. Maybe check your permissions?"

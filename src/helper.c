@@ -243,6 +243,7 @@ void replace(char **src, const char *file, const char *ori, const char *rep)
 	char *dir = strBefore(file, '/');
 	char *filename = strAfter(file, '/');
 	char *replaced = malloc_(BUFFER * sizeof(char));
+	memset(replaced, 0, BUFFER);
 	
 	if (!strReplace(&replaced, filename, ori, rep)) {
 		concatPath(*src, dir, replaced);
@@ -328,7 +329,7 @@ void switchSides(char **src, const char *file, const char sep)
 		doSwitch(switched, tmp, part_one, part_two);
 		snprintf(*src, strlen(dir) + 2, "%s/", dir);
 		strcpy_(*src + strlen(*src), switched);
-		
+
 		if (name) {
 			ext = strAfter(filename, '.');
 			snprintf(*src + strlen(*src), strlen(ext) + 2, ".%s", ext);

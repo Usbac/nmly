@@ -85,6 +85,7 @@ char *strBefore(const char *str, const char ch)
 
 	size = pos - str;
 	part = malloc_(size + 1 * sizeof(char));
+	memset(part, 0, size + 1);
 	substr(part, str, 0, size);
 
 	if (part[size] != '\0') {
@@ -109,6 +110,7 @@ char *strAfter(const char *str, const char ch)
 	size = pos - str;
 	len = strlen(str) - size;
 	part = malloc_(len * sizeof(char));
+	memset(part, 0 , len);
 	substr(part, str, size + 1, len);
 
 	return part;
@@ -242,9 +244,7 @@ void replace(char **src, const char *file, const char *ori, const char *rep)
 	char *filename = strAfter(file, '/');
 	char *replaced = malloc_(BUFFER * sizeof(char));
 	
-	if (strReplace(&replaced, filename, ori, rep)) {
-		*src = NULL;
-	} else {
+	if (!strReplace(&replaced, filename, ori, rep)) {
 		concatPath(*src, dir, replaced);
 	}
 
@@ -259,7 +259,6 @@ int strReplace(char **src, const char *str, const char *ori, const char *rep)
 	char *remaining_ref = malloc_(strlen(str) + 1 * sizeof(char));
 	char *remaining = remaining_ref;
 	char *pos;
-	*src[0] = '\0';
 	
 	strcpy_(remaining, str);
 
@@ -289,7 +288,9 @@ void doSwitch(char *new, const char *sep, const char *part_one, const char *part
 	char *one = malloc_(len_one + 1 * sizeof(char));
 	char *two = malloc_(len_two + 1 * sizeof(char));
 	char *format;
-	
+
+	memset(one, 0, len_one + 1);
+	memset(two, 0, len_two + 1);
 	strcpy_(one, part_one);
 	strcpy_(two, part_two);
 
@@ -320,21 +321,19 @@ void switchSides(char **src, const char *file, const char sep)
 	tmp[0] = sep;
 	tmp[1] = '\0';
 
-	snprintf(*src, strlen(dir) + 2, "%s/", dir);
-
 	part_one = strBefore(name ? name : filename, sep);
 	part_two = strAfter(name ? name : filename, sep);
 
 	if (part_one && sep != '.') {
 		doSwitch(switched, tmp, part_one, part_two);
+		snprintf(*src, strlen(dir) + 2, "%s/", dir);
 		strcpy_(*src + strlen(*src), switched);
+		
 		if (name) {
 			ext = strAfter(filename, '.');
 			snprintf(*src + strlen(*src), strlen(ext) + 2, ".%s", ext);
 			free(ext);
 		}
-	} else {
-		*src = NULL;
 	}
 
 	free(part_two);

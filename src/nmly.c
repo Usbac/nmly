@@ -106,6 +106,7 @@ void listDir(char *basedir, char *argv[])
 	DIR *dir;
 	struct dirent *ent;
 	char *entpath;
+	int len;
 
 	if (!(dir = opendir(basedir))) {
 		if (verbose) {
@@ -123,7 +124,9 @@ void listDir(char *basedir, char *argv[])
 			continue;
 		}
 
-		entpath = malloc_((strlen(basedir) + strlen(ent->d_name) + 2) * sizeof(char));
+		len = strlen(basedir) + strlen(ent->d_name) + 2;
+		entpath = malloc_(len * sizeof(char));
+		memset(entpath, 0, len);
 		concatPath(entpath, basedir, ent->d_name);
 
 		if (isFile(entpath) || (isDir(entpath) && modify_folders)) {
@@ -134,7 +137,7 @@ void listDir(char *basedir, char *argv[])
 			listDir(entpath, argv);
 			folders_n++;
 		}
-		
+
 		free(entpath);
 	}
 
@@ -164,9 +167,10 @@ void processFile(char *entpath, char *argv[])
 	}
 
 	new_path = malloc_(len * sizeof(char));
+	memset(new_path, 0, len);
 	getChanges(&new_path, entpath, argv);
 
-	if (!new_path) {
+	if (!strlen(new_path)) {
 		free(new_path);
 		return;
 	}

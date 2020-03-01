@@ -1,10 +1,10 @@
 CC=gcc
-CFLAGS=-ansi
+CFLAGS=-ansi -g
 
 all: nmly
 
 nmly: src/nmly.o src/helper.o
-	gcc -v -o nmly src/helper.o src/nmly.o
+	gcc -v -o nmly src/helper.o src/nmly.o $(CFLAGS)
 
 helper.o: src/helper.c
 	gcc -v -c src/helper.c

@@ -6,7 +6,7 @@ Nmly
 <br>
 </h1>
 <p align="center">
-<img src="https://img.shields.io/badge/version-1.0.2-blue.svg"> <img src="https://img.shields.io/badge/license-MIT-orange.svg">
+<img src="https://img.shields.io/badge/version-1.0.3-blue.svg"> <img src="https://img.shields.io/badge/license-MIT-orange.svg">
 </p>
 
 <h4 align="center">Nmly is a massive file renamer utility with useful functions and written in C.</h4>
@@ -58,6 +58,22 @@ And yes, it's obviously extremely fast. ;)
 `-u` `--unmodifiable` Show non-modifiable files
 
 `-v` `--version` Show the application version
+
+## Install
+
+Move to your Nmly folder and run the following command:
+
+`make; sudo make install`
+
+Now you should be able to access to Nmly running `nmly` in your terminal.
+
+### Naming
+
+You can specify the Nmly name when installing it with the NAME makefile variable:
+
+`sudo make install NAME=renamer`
+
+Now you will be able to access Nmly with the `renamer` command.
 
 ## Examples
 

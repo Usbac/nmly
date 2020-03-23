@@ -13,7 +13,10 @@
 #define SPLIT_COMPARE_MSG "%s\n%s\n\n"
 #define TIME_MSG "\n%lf Segs\n"
 #define ARG_ERROR_MSG "Error: Invalid command\n"
-#define VERSION_MSG "Nmly v1.0.2\n"
+#define DIRECTORY_ERROR_MSG "Error: Undefined directory\n"
+#define EXTENSION_ERROR_MSG "Error: Undefined extension filter\n"
+#define SIZE_ERROR_MSG "Error: Undefined size filter\n"
+#define VERSION_MSG "NMLY v1.0.3\n"
 #define HELP_USAGE_MSG "USAGE \n\n" \
 		"$ nmly [Arg] [options...]\n\n" \
 		"ARGUMENTS\n\n" \

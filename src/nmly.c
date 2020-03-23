@@ -336,16 +336,31 @@ int mapArgs(int argc, char *argv[])
 
 		/* Working path */
 		if (!strcmp(argv[i], "-d") || !strcmp(argv[i], "--directory")) {
+			if (argv[i+1] == NULL) {
+				printf(DIRECTORY_ERROR_MSG);
+				return 1;
+			}
+
 			working_path = argv[++i];
 		}
 
 		/* Extension filter */
-    		if (!strcmp(argv[i], "-e") || !strcmp(argv[i], "--extension")) {
+		if (!strcmp(argv[i], "-e") || !strcmp(argv[i], "--extension")) {
+			if (argv[i+1] == NULL) {
+				printf(EXTENSION_ERROR_MSG);
+				return 1;
+			}
+
 			filter = argv[++i];
 		}
 
 		/* Size */
 		if (!strcmp(argv[i], "-s") || !strcmp(argv[i], "--size")) {
+			if (argv[i+1] == NULL) {
+				printf(SIZE_ERROR_MSG);
+				return 1;
+			}
+
 			parseSizeArgs(argv[++i]);
 		}
 	}

@@ -1,16 +1,18 @@
 CC=gcc
-CFLAGS=-ansi -g
+CFLAGS=-lm -std=c99 -pedantic
+PREFIX=/usr/local
+ifndef NAME
+    NAME=nmly
+endif
 
 all: nmly
 
-nmly: src/nmly.o src/helper.o
-	gcc -v -o nmly src/helper.o src/nmly.o $(CFLAGS)
+nmly: src/nmly.c src/helper.c
+	$(CC) -o $(NAME) src/nmly.c src/helper.c $(CFLAGS)
 
-helper.o: src/helper.c
-	gcc -v -c src/helper.c
-
-nmly.o: src/nmly.c
-	gcc -v -c src/nmly.c
+install: nmly
+	mkdir -p $(DESTDIR)$(PREFIX)/bin
+	cp $< $(DESTDIR)$(PREFIX)/bin/$(NAME)
 
 clean:
-	rm src/*.o nmly
+	rm $(NAME)

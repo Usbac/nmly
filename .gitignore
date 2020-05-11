@@ -3,3 +3,4 @@ nmly.exe
 nmly
 *.o
 *.swp
+build/

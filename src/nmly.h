@@ -59,15 +59,4 @@
         "$ nmly -u -d folder -r\n" \
         "  folder/filewithpermissions.txt\n"
 
-enum OPTION {
-    op_before,
-    op_after,
-    op_replace,
-    op_upper,
-    op_lower,
-    op_switch,
-    op_reverse,
-    op_remove
-};
-
 #endif /* NMLY_H_ */

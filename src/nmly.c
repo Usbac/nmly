@@ -11,7 +11,6 @@
 char *working_path = ".";
 char *filter = "";
 int files_n = 0, folders_n = 1, files_error_n = 0;
-enum OPTION option;
 int split_view = 0;
 int preview = 0, preview_unmodifiable = 0;
 int verbose = 1;
@@ -19,11 +18,23 @@ int recursive = 0;
 int modify_folders = 0;
 unsigned long size_filter = 0;
 struct timeval start_time, end_time;
+
 enum SIZE_TYPE {
     LT,
     GT,
     EQ
 } size_type_filter;
+
+enum OPTION {
+    op_before,
+    op_after,
+    op_replace,
+    op_upper,
+    op_lower,
+    op_switch,
+    op_reverse,
+    op_remove
+} option;
 
 
 static int isFile(const char* path)

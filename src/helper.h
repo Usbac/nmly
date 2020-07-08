@@ -34,7 +34,7 @@ void strcpy_(char *src, const char *ori);
 void concatPath(char *src, const char *path_one, const char *path_two);
 
 /**
- * Stores in the source string the filename with the specified 
+ * Stores in the source string the filename with the specified
  * text appended at the beginning.
  * @param src the source string.
  * @param file the file path.
@@ -80,7 +80,7 @@ void upper(char **src, const char *file);
 void lower(char **src, const char *file);
 
 /**
- * Stores in the source string the filename with the specified 
+ * Stores in the source string the filename with the specified
  * text replaced by a new one.
  * @param src the source string.
  * @param file the file path.

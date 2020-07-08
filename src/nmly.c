@@ -11,7 +11,7 @@
 char *working_path = ".";
 char *filter = "";
 int files_n = 0, folders_n = 1, files_error_n = 0;
-int option = 0;
+enum OPTION option;
 int split_view = 0;
 int preview = 0, preview_unmodifiable = 0;
 int verbose = 1;
@@ -78,21 +78,21 @@ static int sizeFilter(char *path) {
 static void getChanges(char **new_path, char *file, char *argv[])
 {
     switch (option) {
-        case BEFORE: before(&*new_path, file, argv[2]);
+        case op_before: before(&*new_path, file, argv[2]);
             break;
-        case AFTER: after(&*new_path, file, argv[2]);
+        case op_after: after(&*new_path, file, argv[2]);
             break;
-        case UPPER: upper(&*new_path, file);
+        case op_upper: upper(&*new_path, file);
             break;
-        case LOWER: lower(&*new_path, file);
+        case op_lower: lower(&*new_path, file);
             break;
-        case SWITCH: switchSides(&*new_path, file, argv[2][0]);
+        case op_switch: switchSides(&*new_path, file, argv[2][0]);
             break;
-        case REVERSE: reverse(&*new_path, file);
+        case op_reverse: reverse(&*new_path, file);
             break;
-        case REPLACE: replace(&*new_path, file, argv[2], argv[3]);
+        case op_replace: replace(&*new_path, file, argv[2], argv[3]);
             break;
-        case REMOVE: replace(&*new_path, file, argv[2], "");
+        case op_remove: replace(&*new_path, file, argv[2], "");
     }
 }
 
@@ -131,13 +131,18 @@ static void processFile(char *entpath, char *argv[])
 
     len = 0;
     switch (option) {
-        case BEFORE: case AFTER:
+        case op_before:
+        case op_after:
             len = strlen(entpath) + strlen(argv[2]) + 2;
             break;
-        case UPPER: case LOWER: case SWITCH: case REVERSE:
+        case op_upper:
+        case op_lower:
+        case op_switch:
+        case op_reverse:
             len = strlen(entpath) + 2;
             break;
-        case REPLACE: case REMOVE:
+        case op_replace:
+        case op_remove:
             len = BUFFER;
     }
 
@@ -158,7 +163,7 @@ static void processFile(char *entpath, char *argv[])
         }
 
         if (verbose) {
-            printf(split_view ? SPLIT_COMPARE_MSG : COMPARE_MSG, entpath, new_path);
+            printf(split_view ? MSG_SPLIT_COMPARE : MSG_COMPARE, entpath, new_path);
         }
     }
 
@@ -176,7 +181,7 @@ static void listDir(char *basedir, char *argv[])
     if (!(dir = opendir(basedir))) {
         if (verbose) {
             printf(preview_unmodifiable ? "%s" :
-                split_view ? SPLIT_DIR_ERROR_MSG : DIR_ERROR_MSG, basedir);
+                   split_view ? MSG_SPLIT_DIR_ERROR : MSG_DIR_ERROR, basedir);
         }
 
         files_error_n++;
@@ -246,26 +251,26 @@ static void parseSizeArgs(char *str) {
 
 static void printHelp(void)
 {
-    printf(HELP_USAGE_MSG);
-    printf(HELP_OPTIONS_MSG);
-    printf(HELP_EXAMPLES_MSG);
+    printf(MSG_HELP);
+    printf(MSG_HELP_OPTIONS);
+    printf(MSG_HELP_EXAMPLES);
 }
 
 
 static void printFinishedMsg(void)
 {
     if (!preview_unmodifiable) {
-        printf(preview ? PREVIEW_MSG : SUCCESS_MSG, files_n, folders_n);
+        printf(preview ? MSG_PREVIEW : MSG_SUCCESS, files_n, folders_n);
     }
 
     if (files_error_n > 0 || preview_unmodifiable) {
-        printf(FILES_ERROR_MSG, files_error_n);
+        printf(MSG_FILES_ERROR, files_error_n);
     }
 
     double elapsed = (end_time.tv_sec - start_time.tv_sec)
         + (end_time.tv_usec - start_time.tv_usec) / BILLION;
 
-    printf(TIME_MSG, elapsed);
+    printf(MSG_TIME, elapsed);
 }
 
 
@@ -322,7 +327,7 @@ static int mapArgs(int argc, char *argv[])
 
         /* Version */
         if (!strcmp(argv[i], "-v") || !strcmp(argv[i], "--version")) {
-            printf(VERSION_MSG);
+            printf(MSG_VERSION);
             return 1;
         }
 
@@ -333,7 +338,7 @@ static int mapArgs(int argc, char *argv[])
         /* Working path */
         if (!strcmp(argv[i], "-d") || !strcmp(argv[i], "--directory")) {
             if (argv[i+1] == NULL) {
-                printf(DIRECTORY_ERROR_MSG);
+                printf(MSG_UNDEFINED_DIR_ERROR);
                 return 1;
             }
 
@@ -343,7 +348,7 @@ static int mapArgs(int argc, char *argv[])
         /* Extension filter */
         if (!strcmp(argv[i], "-e") || !strcmp(argv[i], "--extension")) {
             if (argv[i+1] == NULL) {
-                printf(EXTENSION_ERROR_MSG);
+                printf(MSG_EXTENSION_ERROR);
                 return 1;
             }
 
@@ -353,7 +358,7 @@ static int mapArgs(int argc, char *argv[])
         /* Size */
         if (!strcmp(argv[i], "-s") || !strcmp(argv[i], "--size")) {
             if (argv[i+1] == NULL) {
-                printf(SIZE_ERROR_MSG);
+                printf(MSG_SIZE_ERROR);
                 return 1;
             }
 
@@ -363,23 +368,23 @@ static int mapArgs(int argc, char *argv[])
 
     /* Options */
     if (!strcmp(argv[1], "before")) {
-        option = BEFORE;
+        option = op_before;
     } else if (!strcmp(argv[1], "after")) {
-        option = AFTER;
+        option = op_after;
     } else if (!strcmp(argv[1], "replace")) {
-        option = REPLACE;
+        option = op_replace;
     } else if (!strcmp(argv[1], "upper")) {
-        option = UPPER;
+        option = op_upper;
     } else if (!strcmp(argv[1], "lower")) {
-        option = LOWER;
+        option = op_lower;
     } else if (!strcmp(argv[1], "switch")) {
-        option = SWITCH;
+        option = op_switch;
     } else if (!strcmp(argv[1], "reverse")) {
-        option = REVERSE;
+        option = op_reverse;
     } else if (!strcmp(argv[1], "remove")) {
-        option = REMOVE;
+        option = op_remove;
     } else if (!preview_unmodifiable) {
-        printf("%s", ARG_ERROR_MSG);
+        printf("%s", MSG_ARG_ERROR);
         return 1;
     }
 
@@ -395,7 +400,7 @@ static int confirm()
         return 1;
     }
 
-    printf(DIR_CONFIRM_MSG, working_path);
+    printf(MSG_DIR_CONFIRM, working_path);
     scanf("%c", &confirm);
 
     if (confirm != 'Y' && confirm != 'y' && confirm != '\n') {

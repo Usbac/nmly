@@ -183,7 +183,7 @@ void *malloc_(size_t size)
 {
     void *alloc_mem = malloc(size);
     if (!alloc_mem) {
-        printf(ERROR_MEM_MSG);
+        printf(MSG_MEM_ERROR);
         exit(-1);
     }
 

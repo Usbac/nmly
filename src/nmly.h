@@ -3,21 +3,21 @@
 
 #define BILLION 1e9
 #define KBYTE 1024
-#define PREVIEW_MSG "\n%i File(s) to be modified in %i folder(s)"
-#define SUCCESS_MSG "\n%i File(s) modified in %i folder(s)"
-#define FILES_ERROR_MSG "\n%i File(s) cannot be modified. Maybe check your permissions?"
-#define DIR_ERROR_MSG "Cannot open directory %s\n"
-#define SPLIT_DIR_ERROR_MSG "Cannot open directory %s\n\n"
-#define DIR_CONFIRM_MSG "Apply the changes in the following directory '%s'? [Y/n] "
-#define COMPARE_MSG "%s > %s\n"
-#define SPLIT_COMPARE_MSG "%s\n%s\n\n"
-#define TIME_MSG "\n%lf Segs\n"
-#define ARG_ERROR_MSG "Error: Invalid command\n"
-#define DIRECTORY_ERROR_MSG "Error: Undefined directory\n"
-#define EXTENSION_ERROR_MSG "Error: Undefined extension filter\n"
-#define SIZE_ERROR_MSG "Error: Undefined size filter\n"
-#define VERSION_MSG "NMLY v1.0.3\n"
-#define HELP_USAGE_MSG "USAGE \n\n" \
+#define MSG_PREVIEW "\n%i File(s) to be modified in %i folder(s)"
+#define MSG_SUCCESS "\n%i File(s) modified in %i folder(s)"
+#define MSG_FILES_ERROR "\n%i File(s) cannot be modified. Maybe check your permissions?"
+#define MSG_DIR_ERROR "Cannot open directory %s\n"
+#define MSG_SPLIT_DIR_ERROR "Cannot open directory %s\n\n"
+#define MSG_DIR_CONFIRM "Apply the changes in the following directory '%s'? [Y/n] "
+#define MSG_COMPARE "%s > %s\n"
+#define MSG_SPLIT_COMPARE "%s\n%s\n\n"
+#define MSG_TIME "\n%lf Segs\n"
+#define MSG_ARG_ERROR "Error: Invalid command\n"
+#define MSG_UNDEFINED_DIR_ERROR "Error: Undefined directory\n"
+#define MSG_EXTENSION_ERROR "Error: Undefined extension filter\n"
+#define MSG_SIZE_ERROR "Error: Undefined size filter\n"
+#define MSG_VERSION "NMLY v1.0.3\n"
+#define MSG_HELP "USAGE \n\n" \
         "$ nmly [Arg] [options...]\n\n" \
         "ARGUMENTS\n\n" \
         "after [text]         Add text at the end of the filenames\n" \
@@ -28,7 +28,7 @@
         "reverse              Reverse the filename\n" \
         "switch [sep]         Switch the filename order based in a separator\n" \
         "upper                All filename characters to uppercase"
-#define HELP_OPTIONS_MSG "\n\nOPTIONS\n\n" \
+#define MSG_HELP_OPTIONS "\n\nOPTIONS\n\n" \
         "-d --directory [txt]  The target directory\n" \
         "-e --extension [txt]  Filter files based on theirs extension\n" \
         "-f --folders          Apply changes to the folders name too\n" \
@@ -41,7 +41,7 @@
         "   --split            Display the changes horizontally split\n" \
         "-u --unmodifiable     Show non-modifiable files\n" \
         "-v --version          Show the application version"
-#define HELP_EXAMPLES_MSG "\n\nEXAMPLES\n\n" \
+#define MSG_HELP_EXAMPLES "\n\nEXAMPLES\n\n" \
         "$ nmly switch -\n" \
         "  Author - Song.mp3 > Song - Author.mp3\n" \
         "$ nmly remove ' 2017' -d vacations -e mp4\n" \
@@ -59,13 +59,15 @@
         "$ nmly -u -d folder -r\n" \
         "  folder/filewithpermissions.txt\n"
 
-#define BEFORE 0
-#define AFTER 1
-#define REPLACE 2
-#define UPPER 3
-#define LOWER 4
-#define SWITCH 5
-#define REVERSE 6
-#define REMOVE 7
+enum OPTION {
+    op_before,
+    op_after,
+    op_replace,
+    op_upper,
+    op_lower,
+    op_switch,
+    op_reverse,
+    op_remove
+};
 
 #endif /* NMLY_H_ */

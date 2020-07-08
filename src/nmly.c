@@ -4,8 +4,6 @@
 #include <dirent.h>
 #include <sys/stat.h>
 #include <sys/time.h>
-#include <time.h>
-#include <wchar.h>
 #include <locale.h>
 #include "nmly.h"
 #include "helper.h"
@@ -20,7 +18,7 @@ int verbose = 1;
 int recursive = 0;
 int modify_folders = 0;
 unsigned long size_filter = 0;
-struct timeval start_time, end_time, elapsed_time;
+struct timeval start_time, end_time;
 enum SIZE_TYPE {
 	LT,
 	GT,
@@ -28,7 +26,7 @@ enum SIZE_TYPE {
 } size_type_filter;
 
 
-int isFile(const char* path) 
+static int isFile(const char* path)
 {
 	struct stat buf;
 	if (stat(path, &buf) < 0) {
@@ -39,7 +37,7 @@ int isFile(const char* path)
 }
 
 
-int isDir(const char* path) 
+static int isDir(const char* path)
 {
 	struct stat buf;
 	if (stat(path, &buf) < 0) {
@@ -50,7 +48,7 @@ int isDir(const char* path)
 }
 
 
-unsigned long getFileSize(const char* path)
+static unsigned long getFileSize(const char* path)
 {
 	struct stat buf;
 	if (stat(path, &buf) < 0) {
@@ -61,25 +59,23 @@ unsigned long getFileSize(const char* path)
 }
 
 
-int sizeFilter(char *path) {
-	unsigned long filesize = getFileSize(path);
+static int sizeFilter(char *path) {
+	unsigned long file_size = getFileSize(path);
 
-	switch(size_type_filter) {
+	switch (size_type_filter) {
 		case GT:
-			return filesize >= size_filter;
-			break;
+			return file_size >= size_filter;
 		case LT:
-			return filesize < size_filter;
-			break;
+			return file_size < size_filter;
 		case EQ:
-			return filesize == size_filter;
+			return file_size == size_filter;
 	}
 
 	return 0;
 }
 
 
-void getChanges(char **new_path, char *file, char *argv[]) 
+static void getChanges(char **new_path, char *file, char *argv[])
 {
 	switch (option) {
 		case BEFORE: before(&*new_path, file, argv[2]);
@@ -101,7 +97,76 @@ void getChanges(char **new_path, char *file, char *argv[])
 }
 
 
-void listDir(char *basedir, char *argv[])
+static int matchesFilters(char *entpath)
+{
+    int matches = 1;
+    char *file = strAfter(entpath, '/');
+
+    /* Matches filter by extension */
+    char *ext = strAfter(file, '.');
+    if (filter[0] != '\0' && (ext == NULL || strcmp(ext, filter))) {
+        matches = 0;
+    }
+
+    /* Matches filter by file size */
+    if (size_filter != 0 && !sizeFilter(entpath)) {
+        matches = 0;
+    }
+
+    free(file);
+    free(ext);
+
+    return matches;
+}
+
+
+static void processFile(char *entpath, char *argv[])
+{
+    char *new_path;
+    int len;
+
+    if (!matchesFilters(entpath)) {
+        return;
+    }
+
+    len = 0;
+    switch (option) {
+        case BEFORE: case AFTER:
+            len = strlen(entpath) + strlen(argv[2]) + 2;
+            break;
+        case UPPER: case LOWER: case SWITCH: case REVERSE:
+            len = strlen(entpath) + 2;
+            break;
+        case REPLACE: case REMOVE:
+            len = BUFFER;
+    }
+
+    new_path = malloc_(len * sizeof(char));
+    memset(new_path, 0, len);
+    getChanges(&new_path, entpath, argv);
+
+    if (!strlen(new_path)) {
+        free(new_path);
+        return;
+    }
+
+    files_n++;
+
+    if (!preview_unmodifiable) {
+        if (!preview) {
+            rename(entpath, new_path);
+        }
+
+        if (verbose) {
+            printf(split_view ? SPLIT_COMPARE_MSG : COMPARE_MSG, entpath, new_path);
+        }
+    }
+
+    free(new_path);
+}
+
+
+static void listDir(char *basedir, char *argv[])
 {
 	DIR *dir;
 	struct dirent *ent;
@@ -110,7 +175,7 @@ void listDir(char *basedir, char *argv[])
 
 	if (!(dir = opendir(basedir))) {
 		if (verbose) {
-			printf(preview_unmodifiable ? "%s" : 
+			printf(preview_unmodifiable ? "%s" :
 				split_view ? SPLIT_DIR_ERROR_MSG : DIR_ERROR_MSG, basedir);
 		}
 
@@ -145,76 +210,7 @@ void listDir(char *basedir, char *argv[])
 }
 
 
-void processFile(char *entpath, char *argv[])
-{
-	char *new_path;
-	int len;
-
-	if (!matchesFilters(entpath)) {
-		return;
-	}
-	
-	len = 0;
-	switch (option) {
-		case BEFORE: case AFTER:
-			len = strlen(entpath) + strlen(argv[2]) + 2;
-			break;
-		case UPPER: case LOWER: case SWITCH: case REVERSE:
-			len = strlen(entpath) + 2;
-			break;
-		case REPLACE: case REMOVE:
-			len = BUFFER;
-	}
-
-	new_path = malloc_(len * sizeof(char));
-	memset(new_path, 0, len);
-	getChanges(&new_path, entpath, argv);
-
-	if (!strlen(new_path)) {
-		free(new_path);
-		return;
-	}
-
-	files_n++;
-
-	if (!preview_unmodifiable) {
-		if (!preview) {
-			rename(entpath, new_path);
-		}
-
-		if (verbose) {
-			printf(split_view ? SPLIT_COMPARE_MSG : COMPARE_MSG, entpath, new_path);
-		}
-	}
-
-	free(new_path);
-}
-
-
-int matchesFilters(char *entpath)
-{
-	int matches = 1;
-	char *file = strAfter(entpath, '/');
-
-	/* Matches filter by extension */
-	char *ext = strAfter(file, '.');
-	if (filter[0] != '\0' && (ext == NULL || strcmp(ext, filter))) {
-		matches = 0;
-	}
-
-	/* Matches filter by file size */
-	if (size_filter != 0 && !sizeFilter(entpath)) {
-		matches = 0;
-	}
-
-	free(file);
-	free(ext);
-
-	return matches;
-}
-
-
-void parseSizeArgs(char *str) {
+static void parseSizeArgs(char *str) {
 	char sign = str[0];
 	char *suffix;
 
@@ -234,7 +230,7 @@ void parseSizeArgs(char *str) {
 	}
 
 	size_filter = strtoul(str, &suffix, 10);
-	switch(*suffix) {
+	switch (*suffix) {
 		case 'G': case 'g':
 			size_filter = size_filter * KBYTE * KBYTE * KBYTE;
 			break;
@@ -248,7 +244,7 @@ void parseSizeArgs(char *str) {
 }
 
 
-void printHelp(void)
+static void printHelp(void)
 {
 	printf(HELP_USAGE_MSG);
 	printf(HELP_OPTIONS_MSG);
@@ -256,7 +252,7 @@ void printHelp(void)
 }
 
 
-void printFinishedMsg(void)
+static void printFinishedMsg(void)
 {
 	if (!preview_unmodifiable) {
 		printf(preview ? PREVIEW_MSG : SUCCESS_MSG, files_n, folders_n);
@@ -273,7 +269,7 @@ void printFinishedMsg(void)
 }
 
 
-int mapArgs(int argc, char *argv[]) 
+static int mapArgs(int argc, char *argv[])
 {
 	int i;
 	/* Show the help by default */
@@ -297,7 +293,7 @@ int mapArgs(int argc, char *argv[])
 		if (!strcmp(argv[i], "-nv") || !strcmp(argv[i], "--no-verbose")) {
 			verbose = 0;
 		}
-		
+
 		/* Modify folders */
 		if (!strcmp(argv[i], "-f") || !strcmp(argv[i], "--folders")) {
 			modify_folders = 1;
@@ -391,7 +387,7 @@ int mapArgs(int argc, char *argv[])
 }
 
 
-int confirm()
+static int confirm()
 {
 	char confirm;
 
@@ -410,7 +406,7 @@ int confirm()
 }
 
 
-int main(int argc, char *argv[]) 
+int main(int argc, char *argv[])
 {
 	if (mapArgs(argc, argv) || !confirm()) {
 		return 0;

@@ -6,7 +6,9 @@ Nmly
 <br>
 </h1>
 <p align="center">
-<img src="https://img.shields.io/badge/version-1.0.3-blue.svg"> <img src="https://img.shields.io/badge/license-MIT-orange.svg">
+<img src="https://img.shields.io/badge/stability-stable-green.svg">
+<img src="https://img.shields.io/badge/version-1.0.3-blue.svg">
+<img src="https://img.shields.io/badge/license-MIT-orange.svg">
 </p>
 
 <h4 align="center">Nmly is a massive file renamer utility with useful functions and written in C.</h4>

@@ -2,6 +2,7 @@
 #include <stdlib.h>
 #include <string.h>
 #include <dirent.h>
+#include <stdbool.h>
 #include <sys/stat.h>
 #include <sys/time.h>
 #include <locale.h>
@@ -11,11 +12,11 @@
 char *working_path = ".";
 char *filter = "";
 int files_n = 0, folders_n = 1, files_error_n = 0;
-int split_view = 0;
-int preview = 0, preview_unmodifiable = 0;
-int verbose = 1;
-int recursive = 0;
-int modify_folders = 0;
+bool split_view = false;
+bool preview = false, preview_unmodifiable = false;
+int verbose = true;
+bool recursive = false;
+bool modify_folders = false;
 unsigned long size_filter = 0;
 struct timeval start_time, end_time;
 
@@ -37,22 +38,22 @@ enum OPTION {
 } option;
 
 
-static int isFile(const char* path)
+static bool isFile(const char* path)
 {
     struct stat buf;
     if (stat(path, &buf) < 0) {
-        return 0;
+        return false;
     }
 
     return S_ISREG(buf.st_mode);
 }
 
 
-static int isDir(const char* path)
+static bool isDir(const char* path)
 {
     struct stat buf;
     if (stat(path, &buf) < 0) {
-        return 0;
+        return false;
     }
 
     return S_ISDIR(buf.st_mode);
@@ -70,7 +71,7 @@ static unsigned long getFileSize(const char* path)
 }
 
 
-static int sizeFilter(char *path) {
+static bool sizeFilter(char *path) {
     unsigned long file_size = getFileSize(path);
 
     switch (size_type_filter) {
@@ -82,7 +83,7 @@ static int sizeFilter(char *path) {
             return file_size == size_filter;
     }
 
-    return 0;
+    return false;
 }
 
 
@@ -108,20 +109,20 @@ static void getChanges(char **new_path, char *file, char *argv[])
 }
 
 
-static int matchesFilters(char *entpath)
+static bool matchesFilters(char *entpath)
 {
-    int matches = 1;
+    bool matches = true;
     char *file = strAfter(entpath, '/');
+    char *ext = strAfter(file, '.');
 
     /* Matches filter by extension */
-    char *ext = strAfter(file, '.');
     if (filter[0] != '\0' && (ext == NULL || strcmp(ext, filter))) {
-        matches = 0;
+        matches = false;
     }
 
     /* Matches filter by file size */
     if (size_filter != 0 && !sizeFilter(entpath)) {
-        matches = 0;
+        matches = false;
     }
 
     free(file);
@@ -187,7 +188,7 @@ static void listDir(char *basedir, char *argv[])
     DIR *dir;
     struct dirent *ent;
     char *entpath;
-    int len;
+    size_t len;
 
     if (!(dir = opendir(basedir))) {
         if (verbose) {
@@ -285,34 +286,34 @@ static void printFinishedMsg(void)
 }
 
 
-static int mapArgs(int argc, char *argv[])
+static bool mapArgs(int argc, char *argv[])
 {
     int i;
     /* Show the help by default */
     if (argc == 1) {
         printHelp();
-        return 1;
+        return true;
     }
 
     for (i = 0; i < argc; i++) {
         /* Recursive */
         if (!strcmp(argv[i], "-r") || !strcmp(argv[i], "--recursive")) {
-            recursive = 1;
+            recursive = true;
         }
 
         /* Preview */
         if (!strcmp(argv[i], "-p") || !strcmp(argv[i], "--preview")) {
-            preview = 1;
+            preview = true;
         }
 
         /* No Verbose */
         if (!strcmp(argv[i], "-nv") || !strcmp(argv[i], "--no-verbose")) {
-            verbose = 0;
+            verbose = false;
         }
 
         /* Modify folders */
         if (!strcmp(argv[i], "-f") || !strcmp(argv[i], "--folders")) {
-            modify_folders = 1;
+            modify_folders = true;
         }
 
         /* Locale (special characters) */
@@ -322,35 +323,35 @@ static int mapArgs(int argc, char *argv[])
 
         /* Split view */
         if (!strcmp(argv[i], "--split")) {
-            split_view = 1;
+            split_view = true;
         }
 
         /* List unmodifiable files */
         if (!strcmp(argv[i], "-u") || !strcmp(argv[i], "--unmodifiable")) {
-            preview_unmodifiable = 1;
+            preview_unmodifiable = true;
         }
 
         /* Help */
         if (!strcmp(argv[i], "-h") || !strcmp(argv[i], "--help")) {
             printHelp();
-            return 1;
+            return true;
         }
 
         /* Version */
         if (!strcmp(argv[i], "-v") || !strcmp(argv[i], "--version")) {
             printf(MSG_VERSION);
-            return 1;
+            return true;
         }
 
         if (i+1 > argc) {
-            return 0;
+            return false;
         }
 
         /* Working path */
         if (!strcmp(argv[i], "-d") || !strcmp(argv[i], "--directory")) {
             if (argv[i+1] == NULL) {
                 printf(MSG_UNDEFINED_DIR_ERROR);
-                return 1;
+                return true;
             }
 
             working_path = argv[++i];
@@ -360,7 +361,7 @@ static int mapArgs(int argc, char *argv[])
         if (!strcmp(argv[i], "-e") || !strcmp(argv[i], "--extension")) {
             if (argv[i+1] == NULL) {
                 printf(MSG_EXTENSION_ERROR);
-                return 1;
+                return true;
             }
 
             filter = argv[++i];
@@ -370,7 +371,7 @@ static int mapArgs(int argc, char *argv[])
         if (!strcmp(argv[i], "-s") || !strcmp(argv[i], "--size")) {
             if (argv[i+1] == NULL) {
                 printf(MSG_SIZE_ERROR);
-                return 1;
+                return true;
             }
 
             parseSizeArgs(argv[++i]);
@@ -396,29 +397,29 @@ static int mapArgs(int argc, char *argv[])
         option = op_remove;
     } else if (!preview_unmodifiable) {
         printf("%s", MSG_ARG_ERROR);
-        return 1;
+        return true;
     }
 
-    return 0;
+    return false;
 }
 
 
-static int confirm()
+static bool confirm()
 {
     char confirm;
 
     if (preview || preview_unmodifiable) {
-        return 1;
+        return true;
     }
 
     printf(MSG_DIR_CONFIRM, working_path);
     scanf("%c", &confirm);
 
     if (confirm != 'Y' && confirm != 'y' && confirm != '\n') {
-        return 0;
+        return false;
     }
 
-    return 1;
+    return true;
 }
 
 
@@ -430,7 +431,7 @@ int main(int argc, char *argv[])
 
     gettimeofday(&start_time, NULL);
     listDir(working_path, argv);
-     gettimeofday(&end_time, NULL);
+    gettimeofday(&end_time, NULL);
 
     printFinishedMsg();
 

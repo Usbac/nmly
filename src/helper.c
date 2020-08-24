@@ -129,9 +129,9 @@ static void doSwitch(char *new,
                      const char *part_one,
                      const char *part_two)
 {
-    int len_one = strlen(part_one);
-    int len_two = strlen(part_two);
-    int len = len_one + strlen(sep) + len_two + 1;
+    size_t len_one = strlen(part_one);
+    size_t len_two = strlen(part_two);
+    size_t len = len_one + strlen(sep) + len_two + 1;
     char *one = malloc_(len_one + 1 * sizeof(char));
     char *two = malloc_(len_two + 1 * sizeof(char));
     char *format;
@@ -240,7 +240,7 @@ void after(char **src, const char *file, const char *text)
     char *filename = strAfter(file, '/');
     char *name = strBefore(filename, '.');
     char *ext;
-    int len;
+    size_t len;
 
     snprintf(*src, strlen(dir) + 2, "%s/", dir);
     len = strlen(*src);
@@ -275,7 +275,8 @@ void reverse(char **src, const char *file)
     char *dir = strBefore(file, '/');
     char *filename = strAfter(file, '/');
     char *name, *ext;
-    int len;
+    size_t len;
+
     snprintf(*src, strlen(dir) + 2, "%s/", dir);
     len = strlen(*src);
     name = strBefore(filename, '.');

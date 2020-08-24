@@ -11,7 +11,7 @@ Nmly
 
 <h4 align="center">Nmly is a massive file renamer utility with useful functions and written in C.</h4>
 
-Why use it? Because it's extremely easy, includes multiple useful features like preview the changes, filtrer files based on its extensions and size, an option to work recursively or not and much more.
+Why use it? Because it's extremely easy, includes multiple useful features like preview the changes, filter files based on its extensions and size, an option to work recursively and much more.
 
 And yes, it's obviously extremely fast. ;)
 
@@ -96,7 +96,7 @@ picture.jpeg > picture.jpg
 ```console
 usbac@pc:~$ nmly after world -r
 hello.pdf > helloworld.pdf
-subfolder/file.txt > subfolder/fileworld.txt 
+subfolder/file.txt > subfolder/fileworld.txt
 ```
 ```console
 usbac@pc:~$ nmly upper -r --split
@@ -104,7 +104,7 @@ hello.pdf
 HELLO.pdf
 
 subfolder/file.txt
-subfolder/FILE.txt 
+subfolder/FILE.txt
 ```
 ```console
 usbac@pc:~$ nmly -u -d folder -r

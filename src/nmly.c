@@ -14,7 +14,7 @@ char *filter = "";
 int files_n = 0, folders_n = 1, files_error_n = 0;
 bool split_view = false;
 bool preview = false, preview_unmodifiable = false;
-int verbose = true;
+bool verbose = true;
 bool recursive = false;
 bool modify_folders = false;
 unsigned long size_filter = 0;
@@ -87,24 +87,24 @@ static bool sizeFilter(char *path) {
 }
 
 
-static void getChanges(char **new_path, char *file, char *argv[])
+static void getChanges(char *new_path, char *file, char *argv[])
 {
     switch (option) {
-        case op_before: before(&*new_path, file, argv[2]);
+        case op_before: before(&new_path, file, argv[2]);
             break;
-        case op_after: after(&*new_path, file, argv[2]);
+        case op_after: after(&new_path, file, argv[2]);
             break;
-        case op_upper: upper(&*new_path, file);
+        case op_upper: upper(&new_path, file);
             break;
-        case op_lower: lower(&*new_path, file);
+        case op_lower: lower(&new_path, file);
             break;
-        case op_switch: switchSides(&*new_path, file, argv[2][0]);
+        case op_switch: switchSides(&new_path, file, argv[2][0]);
             break;
-        case op_reverse: reverse(&*new_path, file);
+        case op_reverse: reverse(&new_path, file);
             break;
-        case op_replace: replace(&*new_path, file, argv[2], argv[3]);
+        case op_replace: replace(&new_path, file, argv[2], argv[3]);
             break;
-        case op_remove: replace(&*new_path, file, argv[2], "");
+        case op_remove: replace(&new_path, file, argv[2], "");
     }
 }
 
@@ -135,13 +135,12 @@ static bool matchesFilters(char *entpath)
 static void processFile(char *entpath, char *argv[])
 {
     char *new_path;
-    int len;
+    int len = 0;
 
     if (!matchesFilters(entpath)) {
         return;
     }
 
-    len = 0;
     switch (option) {
         case op_before:
         case op_after:
@@ -160,7 +159,7 @@ static void processFile(char *entpath, char *argv[])
 
     new_path = malloc_(len * sizeof(char));
     memset(new_path, 0, len);
-    getChanges(&new_path, entpath, argv);
+    getChanges(new_path, entpath, argv);
 
     if (!strlen(new_path)) {
         free(new_path);

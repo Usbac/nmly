@@ -1,6 +1,6 @@
 <h1 align="center">
 <br>
-<img src="http://usbac.com.ve/wp-content/uploads/2018/10/icon.png" alt="Namely logo" width="200">
+<img src="http://image.usbac.com.ve/nmly.png" alt="Namely logo" width="140">
 <br>
 Nmly
 <br>

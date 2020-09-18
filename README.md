@@ -21,7 +21,7 @@ And yes, it's obviously extremely fast. ;)
 
 `after [text]` Add the text at the end of the filename
 
-`before [text]` Add the text at the begining of the filename
+`before [text]` Add the text at the beginning of the filename
 
 `lower` All filename characters to lowercase
 

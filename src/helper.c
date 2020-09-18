@@ -2,6 +2,7 @@
 #include <stdio.h>
 #include <string.h>
 #include <stdlib.h>
+#include <stdbool.h>
 #include "helper.h"
 
 
@@ -21,13 +22,13 @@ static void trim(char *str)
 }
 
 
-static void substr(char *sub, const char *str, const int start, const int len)
+static void substr(char *sub, const char *str, size_t start, size_t len)
 {
     memcpy(sub, &str[start], len);
 }
 
 
-static char *strBefore(const char *str, const char ch)
+static char *strBefore(const char *str, char ch)
 {
     char *pos = strrchr(str, ch);
     char *part;
@@ -38,8 +39,7 @@ static char *strBefore(const char *str, const char ch)
     }
 
     size = pos - str;
-    part = malloc_(size + 1 * sizeof(char));
-    memset(part, 0, size + 1);
+    part = malloc_(size + 1);
     substr(part, str, 0, size);
 
     if (part[size] != '\0') {
@@ -50,7 +50,7 @@ static char *strBefore(const char *str, const char ch)
 }
 
 
-static void strCases(char *dest, const char *str, const int upper)
+static void strCases(char *dest, const char *str, bool upper)
 {
     size_t len = strlen(str);
     size_t i;
@@ -65,7 +65,7 @@ static void strCases(char *dest, const char *str, const int upper)
 
 static void changeCases(char **src,
                         const char *file,
-                        const int upper)
+                        bool upper)
 {
     char *dir = strBefore(file, '/');
     char *filename = strAfter(file, '/');
@@ -77,21 +77,27 @@ static void changeCases(char **src,
 
     /* Without extension */
     if (!name) {
-        cases = malloc_(strlen(filename) + 1 * sizeof(char));
+        cases = malloc_(strlen(filename) + 1);
         strCases(cases, filename, upper);
         strcpy_(*src + strlen(*src), cases);
-        /* With extension */
-    } else {
-        cases = malloc_(strlen(name) + 1 * sizeof(char));
-        strCases(cases, name, upper);
-        snprintf(*src + strlen(*src), strlen(cases) + strlen(ext) + 2, "%s.%s", cases, ext);
+        goto end;
     }
 
-    free(cases);
-    free(ext);
-    free(name);
-    free(filename);
-    free(dir);
+    /* With extension */
+    cases = malloc_(strlen(name) + 1);
+    strCases(cases, name, upper);
+    snprintf(*src + strlen(*src),
+        strlen(cases) + strlen(ext) + 2,
+        "%s.%s",
+        cases,
+        ext);
+
+    end:
+        free(cases);
+        free(ext);
+        free(name);
+        free(filename);
+        free(dir);
 }
 
 
@@ -100,7 +106,7 @@ static int strReplace(char **src,
                       const char *ori,
                       const char *rep)
 {
-    char *remaining_ref = malloc_(strlen(str) + 1 * sizeof(char));
+    char *remaining_ref = malloc_(strlen(str) + 1);
     char *remaining = remaining_ref;
     char *pos;
 
@@ -132,12 +138,10 @@ static void doSwitch(char *new,
     size_t len_one = strlen(part_one);
     size_t len_two = strlen(part_two);
     size_t len = len_one + strlen(sep) + len_two + 1;
-    char *one = malloc_(len_one + 1 * sizeof(char));
-    char *two = malloc_(len_two + 1 * sizeof(char));
+    char *one = malloc_(len_one + 1);
+    char *two = malloc_(len_two + 1);
     char *format;
 
-    memset(one, 0, len_one + 1);
-    memset(two, 0, len_two + 1);
     strcpy_(one, part_one);
     strcpy_(two, part_two);
 
@@ -199,7 +203,11 @@ void strcpy_(char *src, const char *ori)
 
 void concatPath(char *src, const char *path_one, const char *path_two)
 {
-    snprintf(src, strlen(path_one) + strlen(path_two) + 2, "%s/%s", path_one, path_two);
+    snprintf(src,
+        strlen(path_one) + strlen(path_two) + 2,
+        "%s/%s",
+        path_one,
+        path_two);
 }
 
 
@@ -207,13 +215,20 @@ void before(char **src, const char *file, const char *text)
 {
     char *dir = strBefore(file, '/');
     char *filename = strAfter(file, '/');
-    snprintf(*src, strlen(file) + strlen(text) + 2, "%s/%s%s", dir, text, filename);
+
+    snprintf(*src,
+        strlen(file) + strlen(text) + 2,
+        "%s/%s%s",
+        dir,
+        text,
+        filename);
+
     free(dir);
     free(filename);
 }
 
 
-char *strAfter(const char *str, const char ch)
+char *strAfter(const char *str, char ch)
 {
     char *pos = strrchr(str, ch);
     char *part;
@@ -226,8 +241,7 @@ char *strAfter(const char *str, const char ch)
 
     size = pos - str;
     len = strlen(str) - size;
-    part = malloc_(len * sizeof(char));
-    memset(part, 0 , len);
+    part = malloc_(len);
     substr(part, str, size + 1, len);
 
     return part;
@@ -289,7 +303,11 @@ void reverse(char **src, const char *file)
     } else {
         ext = strAfter(filename, '.');
         strrev(name);
-        snprintf(*src + len, strlen(name) + strlen(ext) + 2, "%s.%s", name, ext);
+        snprintf(*src + len,
+            strlen(name) + strlen(ext) + 2,
+            "%s.%s",
+            name,
+            ext);
         free(name);
         free(ext);
     }
@@ -315,8 +333,7 @@ void replace(char **src, const char *file, const char *ori, const char *rep)
 {
     char *dir = strBefore(file, '/');
     char *filename = strAfter(file, '/');
-    char *replaced = malloc_(BUFFER * sizeof(char));
-    memset(replaced, 0, BUFFER);
+    char *replaced = malloc_(BUFFER);
 
     if (!strReplace(&replaced, filename, ori, rep)) {
         concatPath(*src, dir, replaced);
@@ -328,13 +345,13 @@ void replace(char **src, const char *file, const char *ori, const char *rep)
 }
 
 
-void switchSides(char **src, const char *file, const char sep)
+void switchSides(char **src, const char *file, char sep)
 {
     char *part_one, *part_two, *ext;
     char *dir = strBefore(file, '/');
     char *filename = strAfter(file, '/');
     char *name = strBefore(filename, '.');
-    char *switched = malloc_(strlen(filename) + 1 * sizeof(char));
+    char *switched = malloc_(strlen(filename) + 1);
     char tmp[2];
     tmp[0] = sep;
     tmp[1] = '\0';

@@ -48,7 +48,7 @@ void before(char **src, const char *file, const char *text);
  * @param ch the specified character.
  * @return a substring from the last specified character to the end of the given string.
  */
-char *strAfter(const char *str, const char ch);
+char *strAfter(const char *str, char ch);
 
 /**
  * Stores in the source string the filename with the specified text appended at the end.
@@ -95,6 +95,6 @@ void replace(char **src, const char *file, const char *ori, const char *rep);
  * @param file the file path.
  * @param sep the separator.
  */
-void switchSides(char **src, const char *file, const char sep);
+void switchSides(char **src, const char *file, char sep);
 
 #endif /* HELPER_H_ */

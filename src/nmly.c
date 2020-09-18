@@ -40,23 +40,23 @@ enum OPTION {
 
 static bool isFile(const char* path)
 {
-    struct stat buf;
-    if (stat(path, &buf) < 0) {
+    struct stat info;
+    if (stat(path, &info) < 0) {
         return false;
     }
 
-    return S_ISREG(buf.st_mode);
+    return S_ISREG(info.st_mode);
 }
 
 
 static bool isDir(const char* path)
 {
-    struct stat buf;
-    if (stat(path, &buf) < 0) {
+    struct stat info;
+    if (stat(path, &info) < 0) {
         return false;
     }
 
-    return S_ISDIR(buf.st_mode);
+    return S_ISDIR(info.st_mode);
 }
 
 
@@ -81,9 +81,9 @@ static bool sizeFilter(char *path) {
             return file_size < size_filter;
         case EQ:
             return file_size == size_filter;
+        default:
+            return false;
     }
-
-    return false;
 }
 
 
@@ -109,19 +109,19 @@ static void getChanges(char *new_path, char *file, char *argv[])
 }
 
 
-static bool matchesFilters(char *entpath)
+static bool matchesFilters(char *path)
 {
     bool matches = true;
-    char *file = strAfter(entpath, '/');
+    char *file = strAfter(path, '/');
     char *ext = strAfter(file, '.');
 
     /* Matches filter by extension */
-    if (filter[0] != '\0' && (ext == NULL || strcmp(ext, filter))) {
+    if (filter[0] != '\0' && (ext == NULL || strcmp(ext, filter) != 0)) {
         matches = false;
     }
 
     /* Matches filter by file size */
-    if (size_filter != 0 && !sizeFilter(entpath)) {
+    if (size_filter != 0 && !sizeFilter(path)) {
         matches = false;
     }
 
@@ -132,34 +132,32 @@ static bool matchesFilters(char *entpath)
 }
 
 
-static void processFile(char *entpath, char *argv[])
+static void processFile(char *path, char *argv[])
 {
     char *new_path;
-    int len = 0;
+    size_t len;
 
-    if (!matchesFilters(entpath)) {
+    if (!matchesFilters(path)) {
         return;
     }
 
     switch (option) {
         case op_before:
         case op_after:
-            len = strlen(entpath) + strlen(argv[2]) + 2;
+            len = strlen(path) + strlen(argv[2]) + 2;
             break;
         case op_upper:
         case op_lower:
         case op_switch:
         case op_reverse:
-            len = strlen(entpath) + 2;
+            len = strlen(path) + 2;
             break;
-        case op_replace:
-        case op_remove:
+        default:
             len = BUFFER;
     }
 
-    new_path = malloc_(len * sizeof(char));
-    memset(new_path, 0, len);
-    getChanges(new_path, entpath, argv);
+    new_path = malloc_(len);
+    getChanges(new_path, path, argv);
 
     if (!strlen(new_path)) {
         free(new_path);
@@ -170,11 +168,14 @@ static void processFile(char *entpath, char *argv[])
 
     if (!preview_unmodifiable) {
         if (!preview) {
-            rename(entpath, new_path);
+            rename(path, new_path);
         }
 
         if (verbose) {
-            printf(split_view ? MSG_SPLIT_COMPARE : MSG_COMPARE, entpath, new_path);
+            printf(split_view ?
+                MSG_SPLIT_COMPARE :
+                MSG_COMPARE,
+                path, new_path);
         }
     }
 
@@ -186,13 +187,15 @@ static void listDir(char *basedir, char *argv[])
 {
     DIR *dir;
     struct dirent *ent;
-    char *entpath;
-    size_t len;
+    char *path;
 
     if (!(dir = opendir(basedir))) {
         if (verbose) {
-            printf(preview_unmodifiable ? "%s" :
-                   split_view ? MSG_SPLIT_DIR_ERROR : MSG_DIR_ERROR, basedir);
+            printf(preview_unmodifiable ?
+                "%s" :
+                split_view ?
+                MSG_SPLIT_DIR_ERROR :
+                MSG_DIR_ERROR, basedir);
         }
 
         files_error_n++;
@@ -205,21 +208,19 @@ static void listDir(char *basedir, char *argv[])
             continue;
         }
 
-        len = strlen(basedir) + strlen(ent->d_name) + 2;
-        entpath = malloc_(len * sizeof(char));
-        memset(entpath, 0, len);
-        concatPath(entpath, basedir, ent->d_name);
+        path = malloc_(strlen(basedir) + strlen(ent->d_name) + 2);
+        concatPath(path, basedir, ent->d_name);
 
-        if (isFile(entpath) || (isDir(entpath) && modify_folders)) {
-            processFile(entpath, argv);
+        if (isFile(path) || (isDir(path) && modify_folders)) {
+            processFile(path, argv);
         }
 
-        if (recursive && isDir(entpath)) {
-            listDir(entpath, argv);
+        if (recursive && isDir(path)) {
+            listDir(path, argv);
             folders_n++;
         }
 
-        free(entpath);
+        free(path);
     }
 
     closedir(dir);
@@ -247,13 +248,16 @@ static void parseSizeArgs(char *str) {
 
     size_filter = strtoul(str, &suffix, 10);
     switch (*suffix) {
-        case 'G': case 'g':
+        case 'G':
+        case 'g':
             size_filter = size_filter * KBYTE * KBYTE * KBYTE;
             break;
-        case 'M': case 'm':
+        case 'M':
+        case 'm':
             size_filter = size_filter * KBYTE * KBYTE;
             break;
-        case 'K': case 'k':
+        case 'K':
+        case 'k':
             size_filter = size_filter * KBYTE;
             break;
     }
@@ -278,7 +282,7 @@ static void printFinishedMsg(void)
         printf(MSG_FILES_ERROR, files_error_n);
     }
 
-    double elapsed = (end_time.tv_sec - start_time.tv_sec)
+    long double elapsed = (end_time.tv_sec - start_time.tv_sec)
         + (end_time.tv_usec - start_time.tv_usec) / BILLION;
 
     printf(MSG_TIME, elapsed);

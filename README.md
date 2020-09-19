@@ -13,7 +13,7 @@ Nmly
 
 <h4 align="center">Nmly is a massive file renamer utility with useful functions and written in C.</h4>
 
-Why use it? Because it's extremely easy, includes multiple useful features like preview the changes, filter files based on its extensions and size, an option to work recursively and much more.
+It's extremely easy to use, includes multiple useful features like preview the changes, filter files based on its extensions and size, an option to work recursively and much more.
 
 And yes, it's obviously extremely fast. ;)
 

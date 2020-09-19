@@ -43,8 +43,8 @@ char *strReplace(const char *str,
     }
 
     diff_len = old < rep ?
-               rep - old :
-               0;
+        rep - old :
+        0;
 
     result = malloc(i + counter * diff_len + 1);
 
@@ -66,15 +66,12 @@ char *strReplace(const char *str,
 
 char *strCases(const char *str, bool upper)
 {
-    size_t len = strlen(str);
-    size_t i;
+    size_t len = strlen(str), i;
     char *result = malloc(len + 1);
 
     for (i = 0; i <= len; i++) {
         result[i] = upper ? toupper(str[i]) : tolower(str[i]);
     }
-
-    result[len] = '\0';
 
     return result;
 }

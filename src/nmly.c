@@ -69,7 +69,8 @@ static unsigned long getFileSize(const char* path)
 }
 
 
-static bool sizeFilter(const char *path) {
+static bool sizeFilter(const char *path)
+{
     unsigned long file_size = getFileSize(path);
 
     switch (size_type_filter) {
@@ -196,7 +197,8 @@ static void listDir(char *basedir, char *argv[])
 }
 
 
-static void parseSizeArgs(char *str) {
+static void parseSizeArgs(char *str)
+{
     char sign = str[0];
     char *suffix;
 

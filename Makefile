@@ -1,14 +1,15 @@
 CC=gcc
-CFLAGS=-lm -std=c99 -pedantic
+CFLAGS=-lm -std=c99 -pedantic -g
 PREFIX=/usr/local
+FILES=src/nmly.c src/helper.c src/string.c
 ifndef NAME
     NAME=nmly
 endif
 
 all: nmly
 
-nmly: src/nmly.c src/helper.c
-	$(CC) -o $(NAME) src/nmly.c src/helper.c $(CFLAGS)
+nmly: $(FILES)
+	$(CC) -o $(NAME) $(FILES) $(CFLAGS)
 
 install: nmly
 	mkdir -p $(DESTDIR)$(PREFIX)/bin

@@ -4,7 +4,6 @@
 #include <dirent.h>
 #include <stdbool.h>
 #include <sys/stat.h>
-#include <sys/time.h>
 #include <locale.h>
 #include "nmly.h"
 #include "helper.h"
@@ -18,7 +17,6 @@ bool verbose = true;
 bool recursive = false;
 bool modify_folders = false;
 unsigned long size_filter = 0;
-struct timeval start_time, end_time;
 
 enum SIZE_TYPE {
     LT,
@@ -71,40 +69,30 @@ static unsigned long getFileSize(const char* path)
 }
 
 
-static bool sizeFilter(char *path) {
+static bool sizeFilter(const char *path) {
     unsigned long file_size = getFileSize(path);
 
     switch (size_type_filter) {
-        case GT:
-            return file_size >= size_filter;
-        case LT:
-            return file_size < size_filter;
-        case EQ:
-            return file_size == size_filter;
-        default:
-            return false;
+        case GT: return file_size >= size_filter;
+        case LT: return file_size < size_filter;
+        case EQ: return file_size == size_filter;
+        default: return false;
     }
 }
 
 
-static void getChanges(char *new_path, char *file, char *argv[])
+static char *getChanges(const char *file, char *argv[])
 {
     switch (option) {
-        case op_before: before(&new_path, file, argv[2]);
-            break;
-        case op_after: after(&new_path, file, argv[2]);
-            break;
-        case op_upper: upper(&new_path, file);
-            break;
-        case op_lower: lower(&new_path, file);
-            break;
-        case op_switch: switchSides(&new_path, file, argv[2][0]);
-            break;
-        case op_reverse: reverse(&new_path, file);
-            break;
-        case op_replace: replace(&new_path, file, argv[2], argv[3]);
-            break;
-        case op_remove: replace(&new_path, file, argv[2], "");
+        case op_before: return before(file, argv[2]);
+        case op_after: return after(file, argv[2]);
+        case op_upper: return upper(file);
+        case op_lower: return lower(file);
+        case op_switch: return switchSides(file, argv[2][0]);
+        case op_reverse: return reverse(file);
+        case op_replace: return replace(file, argv[2], argv[3]);
+        case op_remove: return replace(file, argv[2], "");
+        default: return NULL;
     }
 }
 
@@ -135,33 +123,14 @@ static bool matchesFilters(char *path)
 static void processFile(char *path, char *argv[])
 {
     char *new_path;
-    size_t len;
 
     if (!matchesFilters(path)) {
         return;
     }
 
-    switch (option) {
-        case op_before:
-        case op_after:
-            len = strlen(path) + strlen(argv[2]) + 2;
-            break;
-        case op_upper:
-        case op_lower:
-        case op_switch:
-        case op_reverse:
-            len = strlen(path) + 2;
-            break;
-        default:
-            len = BUFFER;
-    }
-
-    new_path = malloc_(len);
-    getChanges(new_path, path, argv);
-
-    if (!strlen(new_path)) {
-        free(new_path);
-        return;
+    new_path = getChanges(path, argv);
+    if (new_path == NULL) {
+        goto end;
     }
 
     files_n++;
@@ -179,23 +148,24 @@ static void processFile(char *path, char *argv[])
         }
     }
 
-    free(new_path);
+    end: free(new_path);
 }
 
 
 static void listDir(char *basedir, char *argv[])
 {
-    DIR *dir;
+    DIR *dir = opendir(basedir);
     struct dirent *ent;
     char *path;
 
-    if (!(dir = opendir(basedir))) {
+    if (!dir) {
         if (verbose) {
             printf(preview_unmodifiable ?
                 "%s" :
                 split_view ?
                 MSG_SPLIT_DIR_ERROR :
-                MSG_DIR_ERROR, basedir);
+                MSG_DIR_ERROR,
+                basedir);
         }
 
         files_error_n++;
@@ -208,8 +178,7 @@ static void listDir(char *basedir, char *argv[])
             continue;
         }
 
-        path = malloc_(strlen(basedir) + strlen(ent->d_name) + 2);
-        concatPath(path, basedir, ent->d_name);
+        path = joinPaths(basedir, ent->d_name);
 
         if (isFile(path) || (isDir(path) && modify_folders)) {
             processFile(path, argv);
@@ -232,14 +201,11 @@ static void parseSizeArgs(char *str) {
     char *suffix;
 
     switch (sign) {
-        case '+':
-            size_type_filter = GT;
+        case '+': size_type_filter = GT;
             break;
-        case '-':
-            size_type_filter = LT;
+        case '-': size_type_filter = LT;
             break;
-        default:
-            size_type_filter = EQ;
+        default: size_type_filter = EQ;
     }
 
     if (size_type_filter != EQ) {
@@ -250,11 +216,11 @@ static void parseSizeArgs(char *str) {
     switch (*suffix) {
         case 'G':
         case 'g':
-            size_filter = size_filter * KBYTE * KBYTE * KBYTE;
+            size_filter = size_filter * GBYTE;
             break;
         case 'M':
         case 'm':
-            size_filter = size_filter * KBYTE * KBYTE;
+            size_filter = size_filter * MBYTE;
             break;
         case 'K':
         case 'k':
@@ -281,11 +247,6 @@ static void printFinishedMsg(void)
     if (files_error_n > 0 || preview_unmodifiable) {
         printf(MSG_FILES_ERROR, files_error_n);
     }
-
-    long double elapsed = (end_time.tv_sec - start_time.tv_sec)
-        + (end_time.tv_usec - start_time.tv_usec) / BILLION;
-
-    printf(MSG_TIME, elapsed);
 }
 
 
@@ -399,7 +360,7 @@ static bool mapArgs(int argc, char *argv[])
     } else if (!strcmp(argv[1], "remove")) {
         option = op_remove;
     } else if (!preview_unmodifiable) {
-        printf("%s", MSG_ARG_ERROR);
+        printf(MSG_ARG_ERROR);
         return true;
     }
 
@@ -432,10 +393,7 @@ int main(int argc, char *argv[])
         return 0;
     }
 
-    gettimeofday(&start_time, NULL);
     listDir(working_path, argv);
-    gettimeofday(&end_time, NULL);
-
     printFinishedMsg();
 
     return 0;

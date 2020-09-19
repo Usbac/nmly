@@ -1,6 +1,5 @@
 #ifndef HELPER_H_
 #define HELPER_H_
-#define BUFFER 512
 #define MSG_MEM_ERROR "Could not allocate memory!"
 
 #if defined(_WIN32) || defined(WIN32)
@@ -19,28 +18,22 @@ int snprintf(char *buf, size_t size, const char *fmt, ...);
 void *malloc_(size_t size);
 
 /**
- * Just a safer strcpy function.
- * @param src the source string.
- * @param ori the original string.
- */
-void strcpy_(char *src, const char *ori);
-
-/**
- * Concatenate two paths into one.
- * @param src the source string.
+ * Returns two paths joined into one.
  * @param path_one the first path.
  * @param path_two the second path.
+ * @return two paths joined into one.
  */
-void concatPath(char *src, const char *path_one, const char *path_two);
+char *joinPaths(const char *path_one, const char *path_two);
 
 /**
- * Stores in the source string the filename with the specified
- * text appended at the beginning.
- * @param src the source string.
+ * Returns the filename with the specified
+ * text prepended.
  * @param file the file path.
  * @param text the text to append.
+ * @return the filename with the specified
+ * text prepended.
  */
-void before(char **src, const char *file, const char *text);
+char *before(const char *file, const char *text);
 
 /**
  * Returns a substring from the last specified character to the end of the given string.
@@ -51,50 +44,51 @@ void before(char **src, const char *file, const char *text);
 char *strAfter(const char *str, char ch);
 
 /**
- * Stores in the source string the filename with the specified text appended at the end.
- * @param src the source string.
+ * Returns the filename with the specified text appended.
  * @param file the file path.
  * @param text the text to append.
+ * @return the filename with the specified text appended.
  */
-void after(char **src, const char *file, const char *text);
+char *after(const char *file, const char *text);
 
 /**
- * Stores in the source string the filename with the text reversed.
- * @param src the source string.
+ * Returns the filename with the text reversed.
  * @param file the file path.
+ * @return the filename with the text reversed.
  */
-void reverse(char **src, const char *file);
+char *reverse(const char *file);
 
 /**
- * Stores in the source string the filename with the text in uppercase.
- * @param src the source string.
+ * Returns the filename with the text in uppercase.
  * @param dir the file path.
+ * @return the filename with the text in uppercase.
  */
-void upper(char **src, const char *file);
+char *upper(const char *file);
 
 /**
- * Stores in the source string the filename with the text in lowercase.
- * @param src the source string.
+ * Returns the filename with the text in lowercase.
  * @param dir the file path.
+ * @return the filename with the text in lowercase.
  */
-void lower(char **src, const char *file);
+char *lower(const char *file);
 
 /**
- * Stores in the source string the filename with the specified
+ * Returns the filename with the specified
  * text replaced by a new one.
- * @param src the source string.
  * @param file the file path.
  * @param ori the text to replace.
  * @param rep the new text.
+ * @return the filename with the specified
+ * text replaced by a new one.
  */
-void replace(char **src, const char *file, const char *ori, const char *rep);
+char *replace(const char *file, const char *ori, const char *rep);
 
 /**
- * Stores in the source string a switched filename based in a separator.
- * @param src the source string.
+ * Returns the switched filename based in a separator.
  * @param file the file path.
  * @param sep the separator.
+ * @return the switched filename based in a separator.
  */
-void switchSides(char **src, const char *file, char sep);
+char *switchSides(const char *file, char sep);
 
 #endif /* HELPER_H_ */

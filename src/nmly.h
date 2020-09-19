@@ -1,8 +1,9 @@
 #ifndef NMLY_H_
 #define NMLY_H_
 
-#define BILLION 1e9L
 #define KBYTE 1024
+#define MBYTE 1024 * 1024
+#define GBYTE 1024 * 1024 * 1024
 #define MSG_PREVIEW "\n%i File(s) to be modified in %i folder(s)"
 #define MSG_SUCCESS "\n%i File(s) modified in %i folder(s)"
 #define MSG_FILES_ERROR "\n%i File(s) cannot be modified. Maybe check your permissions?"
@@ -11,7 +12,6 @@
 #define MSG_DIR_CONFIRM "Apply the changes in the following directory '%s'? [Y/n] "
 #define MSG_COMPARE "%s > %s\n"
 #define MSG_SPLIT_COMPARE "%s\n%s\n\n"
-#define MSG_TIME "\n%Lf Segs\n"
 #define MSG_ARG_ERROR "Error: Invalid command\n"
 #define MSG_UNDEFINED_DIR_ERROR "Error: Undefined directory\n"
 #define MSG_EXTENSION_ERROR "Error: Undefined extension filter\n"

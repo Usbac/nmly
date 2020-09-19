@@ -16,7 +16,7 @@
 #define MSG_UNDEFINED_DIR_ERROR "Error: Undefined directory\n"
 #define MSG_EXTENSION_ERROR "Error: Undefined extension filter\n"
 #define MSG_SIZE_ERROR "Error: Undefined size filter\n"
-#define MSG_VERSION "NMLY v1.0.3\n"
+#define MSG_VERSION "NMLY v1.1.0\n"
 #define MSG_HELP "USAGE \n\n" \
         "$ nmly [Arg] [options...]\n\n" \
         "ARGUMENTS\n\n" \

@@ -1,13 +1,13 @@
 <h1 align="center">
 <br>
-<img src="http://image.usbac.com.ve/nmly.png" alt="Namely logo" width="140">
+<img src="http://image.usbac.com.ve/nmly 2.png" alt="Namely logo" width="140">
 <br>
 Nmly
 <br>
 </h1>
 <p align="center">
 <img src="https://img.shields.io/badge/stability-stable-green.svg">
-<img src="https://img.shields.io/badge/version-1.0.3-blue.svg">
+<img src="https://img.shields.io/badge/version-1.1.0-blue.svg">
 <img src="https://img.shields.io/badge/license-MIT-orange.svg">
 </p>
 

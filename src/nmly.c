@@ -203,10 +203,8 @@ static void parseSizeArgs(char *str)
     char *suffix;
 
     switch (sign) {
-        case '+': size_type_filter = GT;
-            break;
-        case '-': size_type_filter = LT;
-            break;
+        case '+': size_type_filter = GT; break;
+        case '-': size_type_filter = LT; break;
         default: size_type_filter = EQ;
     }
 

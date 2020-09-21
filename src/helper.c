@@ -92,9 +92,8 @@ char *joinPaths(const char *path_one, const char *path_two)
     size_t len_one = strlen(path_one);
     size_t len_two = strlen(path_two);
     size_t len = len_one + len_two + 2;
-    char *result;
+    char *result = malloc_(len);
 
-    result = malloc_(len);
     snprintf(result, len, "%s/%s", path_one, path_two);
 
     return result;

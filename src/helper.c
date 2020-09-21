@@ -166,35 +166,36 @@ char *after(const char *file, const char *text)
 
 char *reverse(const char *file)
 {
-    char *result = malloc_(strlen(file));
+    char *result = malloc_(strlen(file) + 1);
     char *dir = strBefore(file, '/');
     char *filename = strAfter(file, '/');
-    char *name;
+    char *name = strBefore(filename, '.');
 
     snprintf(result, strlen(dir) + 2, "%s/", dir);
-    name = strBefore(filename, '.');
 
     /* Without extension */
     if (!name) {
         strReverse(filename);
         strCpy(result + strlen(result), filename);
-    /* With extension */
-    } else {
-        char *ext = strAfter(filename, '.');
-        strReverse(name);
-        snprintf(result + strlen(result),
-            strlen(name) + strlen(ext) + 2,
-            "%s.%s",
-            name,
-            ext);
-        free(name);
-        free(ext);
+        goto end;
     }
 
-    free(filename);
-    free(dir);
+    /* With extension */
+    char *ext = strAfter(filename, '.');
+    strReverse(name);
+    snprintf(result + strlen(result),
+        strlen(name) + strlen(ext) + 2,
+        "%s.%s",
+        name,
+        ext);
+    free(name);
+    free(ext);
 
-    return result;
+    end:
+        free(filename);
+        free(dir);
+
+        return result;
 }
 
 

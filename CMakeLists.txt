@@ -1,8 +1,6 @@
 cmake_minimum_required(VERSION 3.14)
 project (nmly)
 
-
-
 #SET SOURCE FILES
 SET(PROJECT_SOURCE_FILES
 	src/nmly.c

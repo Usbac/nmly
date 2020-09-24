@@ -6,12 +6,12 @@
     <br>
 </h1>
 
-<h4 align="center">Bulk rename utility</h4>
+<h4 align="center">Bulk rename utility.</h4>
 
 <p align="center">
-<img src="https://img.shields.io/badge/stability-stable-green.svg">
-<img src="https://img.shields.io/badge/version-1.1.1-blue.svg">
-<img src="https://img.shields.io/badge/license-MIT-orange.svg">
+    <img src="https://travis-ci.org/Usbac/nmly.svg?branch=master">
+    <img src="https://img.shields.io/badge/stable-1.1.1-blue.svg">
+    <img src="https://img.shields.io/badge/license-MIT-orange.svg">
 </p>
 
 Nmly is a bulk rename utility with useful functions. Written in [ANSI C](https://en.wikipedia.org/wiki/ANSI_C).

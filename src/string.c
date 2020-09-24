@@ -33,7 +33,6 @@ char *strReplace(const char *str,
     size_t i, counter = 0;
     size_t old_len = strlen(old);
     size_t rep_len = strlen(rep);
-    size_t diff_len;
 
     for (i = 0; str[i] != '\0'; i++) {
         if (strstr(&str[i], old) == &str[i]) {
@@ -42,11 +41,7 @@ char *strReplace(const char *str,
         }
     }
 
-    diff_len = old < rep ?
-        rep - old :
-        0;
-
-    result = malloc(i + counter * diff_len + 1);
+    result = malloc(i + (counter * (rep_len - old_len)) + 1);
 
     i = 0;
     while (*str) {

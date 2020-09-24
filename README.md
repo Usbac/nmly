@@ -80,6 +80,12 @@ You can specify the Nmly name when installing it with the NAME makefile variable
 
 Now you will be able to access Nmly with the `renamer` command.
 
+## Testing
+
+Move to your Nmly folder and run the following command:
+
+`make test && ./nmly_test`
+
 ## Examples
 
 ```console

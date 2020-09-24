@@ -1,23 +1,26 @@
 <h1 align="center">
-<br>
-<img src="http://image.usbac.com.ve/nmly 2.png" alt="Namely logo" width="140">
-<br>
-Nmly
-<br>
+    <br>
+    <img src="http://image.usbac.com.ve/nmly 2.png" alt="Namely logo" width="140">
+    <br>
+    Nmly
+    <br>
 </h1>
+
+<h4 align="center">Bulk rename utility</h4>
+
 <p align="center">
 <img src="https://img.shields.io/badge/stability-stable-green.svg">
 <img src="https://img.shields.io/badge/version-1.1.0-blue.svg">
 <img src="https://img.shields.io/badge/license-MIT-orange.svg">
 </p>
 
-<h4 align="center">Nmly is a massive file renamer utility with useful functions and written in C.</h4>
+Nmly is a bulk rename utility with useful functions. Written in [ANSI C](https://en.wikipedia.org/wiki/ANSI_C).
 
-It's extremely easy to use, includes multiple useful features like preview the changes, filter files based on its extensions and size, an option to work recursively and much more.
+It's extremely easy to use, includes multiple useful features like files preview, multiple filters a recursive option and much more.
 
 And yes, it's obviously extremely fast. ;)
 
-## Arguments
+## Functions
 
 `after [text]` Add the text at the end of the filename
 
@@ -65,9 +68,9 @@ And yes, it's obviously extremely fast. ;)
 
 Move to your Nmly folder and run the following command:
 
-`make; sudo make install`
+`make && sudo make install`
 
-Now you should be able to access to Nmly running `nmly` in your terminal.
+Now you should be able to access Nmly by running `nmly` in your terminal.
 
 ### Naming
 
@@ -80,28 +83,28 @@ Now you will be able to access Nmly with the `renamer` command.
 ## Examples
 
 ```console
-usbac@pc:~$ nmly switch -
+$ nmly switch -
 Author - Song.mp3 > Song - Author.mp3
 ```
 ```console
-usbac@pc:~$ nmly remove " 2017" -d vacations -e mp4
+$ nmly remove " 2017" -d vacations -e mp4
 vacations/video 2017.mp4 > vacations/video.mp4
 ```
 ```console
-usbac@pc:~$ nmly reverse -d folder -s +1g
+$ nmly reverse -d folder -s +1g
 folder/fileBiggerThan1GB.iso > folder/BG1nahTreggiBelif.iso
 ```
 ```console
-usbac@pc:~$ nmly replace jpeg jpg
+$ nmly replace jpeg jpg
 picture.jpeg > picture.jpg
 ```
 ```console
-usbac@pc:~$ nmly after world -r
+$ nmly after world -r
 hello.pdf > helloworld.pdf
 subfolder/file.txt > subfolder/fileworld.txt
 ```
 ```console
-usbac@pc:~$ nmly upper -r --split
+$ nmly upper -r --split
 hello.pdf
 HELLO.pdf
 
@@ -109,6 +112,16 @@ subfolder/file.txt
 subfolder/FILE.txt
 ```
 ```console
-usbac@pc:~$ nmly -u -d folder -r
+$ nmly -u -d folder -r
 folder/filewithpermissions.txt
 ```
+
+## Contributing
+
+Any contribution or support to this project in the form of a pull request or message will be highly appreciated. ❤️
+
+You can read more about it [right here](CONTRIBUTING.md). Don't be shy :)
+
+## License
+
+Nmly is open-source software licensed under the [MIT license](https://github.com/Usbac/nmly/blob/master/LICENSE).

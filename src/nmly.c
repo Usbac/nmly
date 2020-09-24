@@ -247,6 +247,8 @@ static void printFinishedMsg(void)
     if (files_error_n > 0 || preview_unmodifiable) {
         printf(MSG_FILES_ERROR, files_error_n);
     }
+
+    printf("\n");
 }
 
 

@@ -241,7 +241,7 @@ char *switchSides(const char *file, char sep)
     tmp[0] = sep;
     tmp[1] = '\0';
 
-    if (name == NULL || strrchr(name, sep) == NULL) {
+    if (name != NULL && strrchr(name, sep) == NULL) {
         goto end;
     }
 

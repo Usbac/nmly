@@ -21,7 +21,7 @@
         "$ nmly [Function] [options...]\n\n" \
         "FUNCTIONS\n\n" \
         "after [text]         Add text at the end of the filenames\n" \
-        "before [text]        Add text at the begining of the filenames\n" \
+        "before [text]        Add text at the beginning of the filenames\n" \
         "lower                All filename characters to lowercase\n" \
         "remove [text]        Remove the specified text from the filename\n" \
         "replace [ori] [new]  Replace a text with a new one\n" \

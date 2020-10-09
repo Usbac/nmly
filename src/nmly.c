@@ -164,8 +164,8 @@ static void listDir(char *basedir, char *argv[])
             printf(preview_unmodifiable ?
                 "%s" :
                 split_view ?
-                MSG_SPLIT_DIR_ERROR :
-                MSG_DIR_ERROR,
+                ERROR_SPLIT_DIR :
+                ERROR_DIR,
                 basedir);
         }
 
@@ -245,7 +245,7 @@ static void printFinishedMsg(void)
     }
 
     if (files_error_n > 0 || preview_unmodifiable) {
-        printf(MSG_FILES_ERROR, files_error_n);
+        printf(ERROR_FILES, files_error_n);
     }
 
     printf("\n");
@@ -316,7 +316,7 @@ static bool mapArgs(int argc, char *argv[])
         /* Working path */
         if (!strcmp(argv[i], "-d") || !strcmp(argv[i], "--directory")) {
             if (argv[i+1] == NULL) {
-                printf(MSG_UNDEFINED_DIR_ERROR);
+                printf(ERROR_UNDEFINED_DIR);
                 return true;
             }
 
@@ -326,7 +326,7 @@ static bool mapArgs(int argc, char *argv[])
         /* Extension filter */
         if (!strcmp(argv[i], "-e") || !strcmp(argv[i], "--extension")) {
             if (argv[i+1] == NULL) {
-                printf(MSG_EXTENSION_ERROR);
+                printf(ERROR_EXTENSION);
                 return true;
             }
 
@@ -336,7 +336,7 @@ static bool mapArgs(int argc, char *argv[])
         /* Size */
         if (!strcmp(argv[i], "-s") || !strcmp(argv[i], "--size")) {
             if (argv[i+1] == NULL) {
-                printf(MSG_SIZE_ERROR);
+                printf(ERROR_SIZE);
                 return true;
             }
 
@@ -362,7 +362,7 @@ static bool mapArgs(int argc, char *argv[])
     } else if (!strcmp(argv[1], "remove")) {
         option = op_remove;
     } else if (!preview_unmodifiable) {
-        printf(MSG_ARG_ERROR);
+        printf(ERROR_ARG);
         return true;
     }
 

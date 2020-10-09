@@ -1,6 +1,6 @@
 #ifndef HELPER_H_
 #define HELPER_H_
-#define MSG_MEM_ERROR "Could not allocate memory!"
+#define ERROR_ALLOC_MEM "Could not allocate memory!"
 
 #if defined(_WIN32) || defined(WIN32)
 /**

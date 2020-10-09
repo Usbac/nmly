@@ -6,16 +6,16 @@
 #define GBYTE 1024 * 1024 * 1024
 #define MSG_PREVIEW "\n%i File(s) to be modified in %i folder(s)"
 #define MSG_SUCCESS "\n%i File(s) modified in %i folder(s)"
-#define MSG_FILES_ERROR "\n%i File(s) cannot be modified. Maybe check your permissions?"
-#define MSG_DIR_ERROR "Cannot open directory %s\n"
-#define MSG_SPLIT_DIR_ERROR "Cannot open directory %s\n\n"
+#define ERROR_FILES "\n%i File(s) cannot be modified. Maybe check your permissions?"
+#define ERROR_DIR "Cannot open directory %s\n"
+#define ERROR_SPLIT_DIR "Cannot open directory %s\n\n"
+#define ERROR_ARG "Error: Invalid command\n"
+#define ERROR_UNDEFINED_DIR "Error: Undefined directory\n"
+#define ERROR_EXTENSION "Error: Undefined extension filter\n"
+#define ERROR_SIZE "Error: Undefined size filter\n"
 #define MSG_DIR_CONFIRM "Apply the changes in the following directory '%s'? [Y/n] "
 #define MSG_COMPARE "%s > %s\n"
 #define MSG_SPLIT_COMPARE "%s\n%s\n\n"
-#define MSG_ARG_ERROR "Error: Invalid command\n"
-#define MSG_UNDEFINED_DIR_ERROR "Error: Undefined directory\n"
-#define MSG_EXTENSION_ERROR "Error: Undefined extension filter\n"
-#define MSG_SIZE_ERROR "Error: Undefined size filter\n"
 #define MSG_VERSION "NMLY v1.1.1\n"
 #define MSG_HELP "USAGE \n\n" \
         "$ nmly [Function] [options...]\n\n" \

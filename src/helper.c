@@ -79,7 +79,7 @@ void *malloc_(size_t size)
 {
     void *alloc_mem = malloc(size);
     if (!alloc_mem) {
-        printf(MSG_MEM_ERROR);
+        printf(ERROR_ALLOC_MEM);
         exit(-1);
     }
 

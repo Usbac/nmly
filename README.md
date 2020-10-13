@@ -13,9 +13,6 @@
     <img src="https://img.shields.io/badge/stable-1.1.1-blue.svg">
     <img src="https://img.shields.io/badge/license-MIT-orange.svg">
 </p>
-<p align="center">
-    <a href="https://repology.org/project/nmly/versions"><img src="https://repology.org/badge/vertical-allrepos/nmly.svg" alt="Packaging status"></a>
-</p>
 
 Nmly is a bulk rename utility with useful functions. Written in [ANSI C](https://en.wikipedia.org/wiki/ANSI_C).
 
@@ -68,6 +65,8 @@ And yes, it's obviously extremely fast. ;)
 `-v` `--version` Show the application version
 
 ## Install
+
+<a href="https://repology.org/project/nmly/versions"><img src="https://repology.org/badge/vertical-allrepos/nmly.svg" alt="Packaging status"></a>
 
 Move to your Nmly folder and run the following command:
 

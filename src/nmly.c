@@ -8,14 +8,64 @@
 #include "nmly.h"
 #include "helper.h"
 
+/**
+ * Working path.
+ */
 char *working_path = ".";
+
+/**
+ * Extension filter.
+ */
 char *filter = "";
-int files_n = 0, folders_n = 1, files_error_n = 0;
+
+/**
+ * Number of files modified/to modify.
+ */
+int files_n = 0;
+
+/**
+ * Number of folders modified/to modify.
+ */
+int folders_n = 1;
+
+/**
+ * Number of unmodifiable files.
+ */
+int files_error_n = 0;
+
+/**
+ * Display changes in different lines or not.
+ */
 bool split_view = false;
-bool preview = false, preview_unmodifiable = false;
+
+/**
+ * Preview changes or not.
+ */
+bool preview = false;
+
+/**
+ * Preview unmodifiable files or not.
+ */
+bool preview_unmodifiable = false;
+
+/**
+ * Verbose mode or not.
+ */
 bool verbose = true;
+
+/**
+ * Work recursive or not.
+ */
 bool recursive = false;
+
+/**
+ * Modify folders too or not.
+ */
 bool modify_folders = false;
+
+/**
+ * File size filter.
+ */
 unsigned long size_filter = 0;
 
 enum SIZE_TYPE {

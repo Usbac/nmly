@@ -6,7 +6,7 @@
 /**
  * Reference to the snprintf function of the stdio library.
  * Because you know, some compilers are not compliant with
- * the C standard.
+ * the standard.
  */
 int snprintf(char *buf, size_t size, const char *fmt, ...);
 #endif

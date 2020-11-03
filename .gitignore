@@ -1,6 +1,7 @@
 .vscode/
 nmly.exe
 nmly
+nmly_test
 *.o
 *.swp
 build/

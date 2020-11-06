@@ -66,6 +66,8 @@ And yes, it's obviously extremely fast. ;)
 
 ## Install
 
+<a href="https://repology.org/project/nmly/versions"><img src="https://repology.org/badge/vertical-allrepos/nmly.svg" alt="Packaging status"></a>
+
 Move to your Nmly folder and run the following command:
 
 `make && sudo make install`

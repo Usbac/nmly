@@ -1,5 +1,6 @@
 CC=gcc
 CFLAGS=-lm -std=c99 -pedantic -g
+LDFLAGS=
 PREFIX=/usr/local
 FILES=src/helper.c src/string.c
 ifndef NAME
@@ -9,7 +10,7 @@ endif
 all: nmly
 
 nmly: $(FILES)
-	$(CC) -o $(NAME) $(FILES) src/nmly.c $(CFLAGS)
+	$(CC) -o $(NAME) $(FILES) src/nmly.c $(CFLAGS) $(LDFLAGS)
 
 install: nmly
 	mkdir -p $(DESTDIR)$(PREFIX)/bin

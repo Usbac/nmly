@@ -1,4 +1,6 @@
 .vscode/
+.idea
+cmake-build-debug
 nmly.exe
 nmly
 nmly_test

@@ -431,11 +431,7 @@ static bool confirm()
     printf(MSG_DIR_CONFIRM, working_path);
     scanf("%c", &confirm);
 
-    if (confirm != 'Y' && confirm != 'y' && confirm != '\n') {
-        return false;
-    }
-
-    return true;
+    return confirm == 'Y' || confirm == 'y' || confirm == '\n';
 }
 
 
